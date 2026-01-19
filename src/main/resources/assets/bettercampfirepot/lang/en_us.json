@@ -1,6 +1,8 @@
 {
-  "itemGroup.bettercampfirepot": "Better Cooking Pots",
+  "itemGroup.bettercampfirepot.pot": "Better Campfire Pot: Pots",
+  "itemGroup.bettercampfirepot.upgrade": "Better Campfire Pot: Upgrades",
 
+  "tier.bettercampfirepot.vanilla": "Vanilla",
   "tier.bettercampfirepot.copper": "Copper",
   "tier.bettercampfirepot.iron": "Iron",
   "tier.bettercampfirepot.gold": "Gold",
@@ -8,6 +10,8 @@
   "tier.bettercampfirepot.emerald": "Emerald",
   "tier.bettercampfirepot.obsidian": "Obsidian",
   "tier.bettercampfirepot.netherite": "Netherite",
+
+  "item.bettercampfirepot.tier_upgrade_item": "%s to %s Tier Upgrade",
 
   "tooltip.bettercampfirepot.speed": "Speed: %sx"
 }

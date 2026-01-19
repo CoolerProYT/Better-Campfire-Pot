@@ -5,7 +5,6 @@ bin
 .metadata
 .classpath
 .project
-.kotlin
 
 # idea
 out
@@ -23,5 +22,7 @@ eclipse
 run
 runs
 run-data
+.kotlin
+.kotlin/errors
 
 repo

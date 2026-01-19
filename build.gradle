@@ -4,6 +4,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.139'
     id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '2.2.0'
+    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -128,12 +129,18 @@ neoForge.ideSyncTask generateModMetadata
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+            artifactId = mod_id
             from components.java
         }
     }
     repositories {
+        mavenLocal()
         maven {
-            url "file://${project.projectDir}/repo"
+            url = findProperty("repsy_url")
+            credentials {
+                username = findProperty("repsy_username")
+                password = findProperty("repsy_password")
+            }
         }
     }
 }
@@ -146,5 +153,27 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+    }
+}
+
+publishMods {
+    file.set(jar.archiveFile)
+    type = STABLE
+    modLoaders.add("neoforge")
+    changelog = file("changelog.md").text
+    displayName = mod_id + "-" + mod_version
+
+    curseforge {
+        projectId = ""
+        accessToken = findProperty("CF_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        requires("cobblemon")
+    }
+
+    modrinth {
+        projectId = ''
+        accessToken = findProperty("MODRINTH_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        requires("cobblemon")
     }
 }

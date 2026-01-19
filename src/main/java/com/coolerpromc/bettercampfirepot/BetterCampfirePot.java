@@ -1,11 +1,14 @@
 package com.coolerpromc.bettercampfirepot;
 
+import com.cobblemon.mod.common.CobblemonItems;
 import com.cobblemon.mod.common.CobblemonSounds;
 import com.cobblemon.mod.common.block.campfirepot.CampfirePotColor;
+import com.cobblemon.mod.common.item.CampfirePotItem;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfirePotBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
+import com.coolerpromc.bettercampfirepot.item.TierUpgradeItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
 import com.coolerpromc.bettercampfirepot.util.Tiers;
 import com.mojang.datafixers.util.Pair;
@@ -25,12 +28,15 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -52,11 +58,18 @@ public class BetterCampfirePot {
 
     public static List<DeferredBlock<BetterCampfirePotBlock>> CAMPFIRE_POTS = new ArrayList<>();
     public static List<DeferredItem<BetterCampfirePotItem>> CAMPFIRE_POT_ITEMS = new ArrayList<>();
+    public static List<DeferredItem<TierUpgradeItem>> TIER_UPGRADES = new ArrayList<>();
 
     public static final Supplier<CreativeModeTab> BETTER_CAMPFIRE_POT_TAB = CREATIVE_TABS.register("better_campfire_pot_tab", () -> CreativeModeTab.builder()
-            .icon(BuiltInRegistries.ITEM.get(id("copper_red_campfire_pot"))::getDefaultInstance)
-            .title(Component.translatable("itemGroup.bettercampfirepot"))
+            .icon(BuiltInRegistries.ITEM.get(id("netherite_red_campfire_pot"))::getDefaultInstance)
+            .title(Component.translatable("itemGroup.bettercampfirepot.pot"))
             .displayItems((parameters,output) -> output.acceptAll(CAMPFIRE_POTS.stream().map(DeferredBlock::toStack).toList()))
+            .build());
+
+    public static final Supplier<CreativeModeTab> BETTER_CAMPFIRE_POT_UPGRADE_TAB = CREATIVE_TABS.register("better_campfire_pot_upgrade_tab", () -> CreativeModeTab.builder()
+            .icon(BuiltInRegistries.ITEM.get(id("vanilla_to_netherite_tier_upgrade"))::getDefaultInstance)
+            .title(Component.translatable("itemGroup.bettercampfirepot.upgrade"))
+            .displayItems((parameters,output) -> output.acceptAll(TIER_UPGRADES.stream().map(DeferredItem::toStack).toList()))
             .build());
 
     private static void registerCampfirePots(){
@@ -78,8 +91,39 @@ public class BetterCampfirePot {
         }
     }
 
+    private static void registerTierUpgrades(){
+        List<Pair<String, String>> tiers = List.of(
+                Pair.of(Tiers.VANILLA, Tiers.COPPER),
+                Pair.of(Tiers.VANILLA, Tiers.IRON),
+                Pair.of(Tiers.VANILLA, Tiers.GOLD),
+                Pair.of(Tiers.VANILLA, Tiers.DIAMOND),
+                Pair.of(Tiers.VANILLA, Tiers.EMERALD),
+                Pair.of(Tiers.VANILLA, Tiers.NETHERITE),
+                Pair.of(Tiers.COPPER, Tiers.IRON),
+                Pair.of(Tiers.COPPER, Tiers.GOLD),
+                Pair.of(Tiers.COPPER, Tiers.DIAMOND),
+                Pair.of(Tiers.COPPER, Tiers.EMERALD),
+                Pair.of(Tiers.COPPER, Tiers.NETHERITE),
+                Pair.of(Tiers.IRON, Tiers.GOLD),
+                Pair.of(Tiers.IRON, Tiers.DIAMOND),
+                Pair.of(Tiers.IRON, Tiers.EMERALD),
+                Pair.of(Tiers.IRON, Tiers.NETHERITE),
+                Pair.of(Tiers.GOLD, Tiers.DIAMOND),
+                Pair.of(Tiers.GOLD, Tiers.EMERALD),
+                Pair.of(Tiers.GOLD, Tiers.NETHERITE),
+                Pair.of(Tiers.DIAMOND, Tiers.EMERALD),
+                Pair.of(Tiers.DIAMOND, Tiers.NETHERITE),
+                Pair.of(Tiers.EMERALD, Tiers.NETHERITE)
+        );
+
+        for (Pair<String, String> tier : tiers){
+            TIER_UPGRADES.add(ITEMS.registerItem(tier.getFirst() + "_to_" + tier.getSecond() + "_tier_upgrade", properties -> new TierUpgradeItem(tier.getFirst(), tier.getSecond(), properties)));
+        }
+    }
+
     public BetterCampfirePot(IEventBus modEventBus, ModContainer modContainer) {
         registerCampfirePots();
+        registerTierUpgrades();
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
@@ -97,5 +141,45 @@ public class BetterCampfirePot {
 
     public static ResourceLocation id(String path){
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static Component tierName(String tier){
+        return Component.translatable("tier.bettercampfirepot." + tier);
+    }
+
+    public static Optional<CampfirePotItem> findVanillaPotByColor(BetterCampfirePotItem item){
+        return CobblemonItems.INSTANCE.getCampfire_pots().stream().filter(cobblemonItem -> cobblemonItem.getColor().equals(item.color)).findFirst();
+    }
+
+    public static Optional<BetterCampfirePotItem> findBetterPotByTierAndColor(BetterCampfirePotItem item, String tier){
+        return findBetterPotByTierAndColor(item.color, tier);
+    }
+
+    public static Optional<BetterCampfirePotItem> findBetterPotByTierAndColor(CampfirePotColor color, String tier){
+        return BetterCampfirePot.CAMPFIRE_POT_ITEMS.stream().map(DeferredHolder::get).filter(betterItem -> betterItem.color.equals(color) && Objects.equals(betterItem.tier, tier)).findFirst();
+    }
+
+    public static boolean filterCopperTier(DeferredItem<BetterCampfirePotItem> item){
+        return Objects.equals(item.get().tier, Tiers.COPPER);
+    }
+
+    public static boolean filterIronTier(DeferredItem<BetterCampfirePotItem> item){
+        return Objects.equals(item.get().tier, Tiers.IRON);
+    }
+
+    public static boolean filterGoldTier(DeferredItem<BetterCampfirePotItem> item){
+        return Objects.equals(item.get().tier, Tiers.GOLD);
+    }
+
+    public static boolean filterDiamondTier(DeferredItem<BetterCampfirePotItem> item){
+        return Objects.equals(item.get().tier, Tiers.DIAMOND);
+    }
+
+    public static boolean filterEmeraldTier(DeferredItem<BetterCampfirePotItem> item){
+        return Objects.equals(item.get().tier, Tiers.EMERALD);
+    }
+
+    public static boolean filterNetheriteTier(DeferredItem<BetterCampfirePotItem> item){
+        return Objects.equals(item.get().tier, Tiers.NETHERITE);
     }
 }

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bettercampfirepot:item/campfire_pot/campfire_pot_red",
+    "layer1": "bettercampfirepot:item/tier/copper",
+    "layer2": "bettercampfirepot:item/upgrade_arrow/gold"
+  }
+}

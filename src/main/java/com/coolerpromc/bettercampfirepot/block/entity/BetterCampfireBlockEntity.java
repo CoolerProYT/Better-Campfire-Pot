@@ -477,7 +477,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         return saveWithoutMetadata(registryLookup);
     }
 
-    private void onItemUpdate(Level level) {
+    public void onItemUpdate(Level level) {
         BlockState oldState = level.getBlockState(getBlockPos());
         level.sendBlockUpdated(getBlockPos(), oldState, level.getBlockState(getBlockPos()), Block.UPDATE_ALL);
         level.updateNeighbourForOutputSignal(getBlockPos(), level.getBlockState(getBlockPos()).getBlock());

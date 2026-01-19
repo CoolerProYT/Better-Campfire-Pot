@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_copper_to_emerald_tier_upgrade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "bettercampfirepot:copper_to_emerald_tier_upgrade"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "bettercampfirepot:copper_to_emerald_tier_upgrade_to_copper_to_netherite_tier_upgrade_smithing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_copper_to_emerald_tier_upgrade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "bettercampfirepot:copper_to_emerald_tier_upgrade_to_copper_to_netherite_tier_upgrade_smithing"
+    ]
+  }
+}
