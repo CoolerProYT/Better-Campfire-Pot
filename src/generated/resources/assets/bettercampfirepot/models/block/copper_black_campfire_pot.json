@@ -1,0 +1,7 @@
+{
+  "parent": "cobblemon:block/campfire_pot",
+  "textures": {
+    "particle": "bettercampfirepot:block/copper_black_campfire_pot",
+    "pot": "bettercampfirepot:block/copper_black_campfire_pot"
+  }
+}

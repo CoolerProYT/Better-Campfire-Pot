@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_diamond": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:diamond"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gold_pink_campfire_pot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "bettercampfirepot:gold_pink_campfire_pot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "bettercampfirepot:diamond_pink_campfire_pot"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gold_pink_campfire_pot",
+      "has_diamond"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "bettercampfirepot:diamond_pink_campfire_pot"
+    ]
+  }
+}

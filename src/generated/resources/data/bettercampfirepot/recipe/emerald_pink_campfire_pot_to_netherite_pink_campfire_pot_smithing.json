@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "item": "bettercampfirepot:emerald_pink_campfire_pot"
+  },
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:netherite_pink_campfire_pot"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}
