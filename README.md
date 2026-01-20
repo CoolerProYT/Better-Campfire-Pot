@@ -1,25 +1,31 @@
+## Better Campfire Pot
 
-Installation information
-=======
+This mod adds **6 new tiers of Campfire Pots**, with each higher tier offering **faster processing speeds**.  
+Recipes for all Campfire Pots and upgrade items can be viewed in **JEI** and the **vanilla Recipe Book**.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## Features
+- Adds **6 Campfire Pot tiers** with increasing cooking speed
+- **Improved recipe handling**
+    - Ingredients **do not need to be placed in a shaped pattern**
+    - Works similarly to shapeless crafting for easier use
+- **Automation-friendly**
+    - Compatible with **Applied Energistics 2 (AE2)** and **Refined Storage (RS)**
+    - *Seasoning automation may require additional setup*
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+## Configurable Speed
+- Speed of each tier Campfire Pot can be modified in `bettercampfirepot-common.toml`
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+## Inserting Items into the Pot
+Each side of the Campfire Pot is bound to a different slot:
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+- **Top:** Seasoning slots
+- **Sides:** Ingredient slots
+- **Bottom:** Output slot
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## Upgrading Pots
+Campfire Pots can be upgraded in two ways:
+- Craft a higher-tier pot directly in the crafting table
+- Use the correct upgrade item and **sneak + right-click** on an existing Campfire Pot
+
+## Requirements
+- [Cobblemon]([https://www.curseforge.com/minecraft/mc-mods/cobblemon](https://modrinth.com/mod/cobblemon)) is required for this mod to function
