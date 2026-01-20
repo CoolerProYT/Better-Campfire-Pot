@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_campfire_pot_green": {
+      "conditions": {
+        "items": [
+          {
+            "items": "cobblemon:campfire_pot_green"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_copper_ingot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:copper_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "bettercampfirepot:copper_green_campfire_pot"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_campfire_pot_green",
+      "has_copper_ingot"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "bettercampfirepot:copper_green_campfire_pot"
+    ]
+  }
+}

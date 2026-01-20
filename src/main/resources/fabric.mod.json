@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "bettercampfirepot",
+  "version": "${version}",
+  "name": "Better Campfire Pot",
+  "description": "A Cobblemon addon mod to make cooking pot faster and easier automation setup",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/cobblemon-better-campfire-pot",
+    "sources": "https://github.com/CoolerProYT/Better-Campfire-Pot"
+  },
+  "license": "MIT",
+  "icon": "assets/bettercampfirepot/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.coolerpromc.bettercampfirepot.BetterCampfirePot"
+    ],
+    "client": [
+      "com.coolerpromc.bettercampfirepot.BetterCampfirePotClient"
+    ],
+    "fabric-datagen": [
+      "com.coolerpromc.bettercampfirepot.datagen.DataGenerators"
+    ],
+    "jei_mod_plugin": [
+      "com.coolerpromc.bettercampfirepot.compat.jei.ModJEIPlugin"
+    ]
+  },
+  "mixins": [
+    "bettercampfirepot.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*",
+    "cobblemon": ">=1.7.0"
+  }
+}

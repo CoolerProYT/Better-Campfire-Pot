@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bettercampfirepot:item/campfire_pot/campfire_pot_blue",
+    "layer1": "bettercampfirepot:item/tier/iron"
+  }
+}
