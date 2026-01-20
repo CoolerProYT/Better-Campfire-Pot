@@ -86,6 +86,7 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
     public static void onServerStarted(ServerStartedEvent event) {
         List<RecipeHolder<CookingPotRecipe>> cookingPotRecipes = event.getServer().getRecipeManager().getAllRecipesFor(CobblemonRecipeTypes.INSTANCE.getCOOKING_POT_COOKING());
         List<RecipeHolder<CookingPotShapelessRecipe>> cookingPotShapelessRecipes = event.getServer().getRecipeManager().getAllRecipesFor(CobblemonRecipeTypes.INSTANCE.getCOOKING_POT_SHAPELESS());
+        RECIPES.clear();
 
         cookingPotRecipes.forEach(holder -> {
             CookingPotRecipe recipe = holder.value();

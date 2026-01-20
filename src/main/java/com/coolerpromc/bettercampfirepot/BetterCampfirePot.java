@@ -26,6 +26,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -73,9 +74,10 @@ public class BetterCampfirePot {
             .build());
 
     private static void registerCampfirePots(){
-        List<Pair<String, Integer>> tiers = List.of(Pair.of(Tiers.COPPER, 5), Pair.of(Tiers.IRON, 10), Pair.of(Tiers.GOLD, 20), Pair.of(Tiers.DIAMOND, 40), Pair.of(Tiers.EMERALD, 60), Pair.of(Tiers.NETHERITE, 80));
+        List<String> tiers = new ArrayList<>(Tiers.TIERS);
+        tiers.removeFirst();
 
-        for (Pair<String, Integer> tier : tiers){
+        for (String tier : tiers){
             for (CampfirePotColor color : CampfirePotColor.getEntries()){
                 MapColor mapColor = switch (color){
                     case RED -> MapColor.COLOR_RED;
@@ -86,7 +88,7 @@ public class BetterCampfirePot {
                     case WHITE -> MapColor.COLOR_LIGHT_GRAY;
                     case PINK -> MapColor.COLOR_PINK;
                 };
-                CAMPFIRE_POTS.add(registerBlockWithItem(tier.getFirst(), properties -> new BetterCampfirePotBlock(properties.mapColor(mapColor).requiresCorrectToolForDrops().sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS).strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()), color, tier.getSecond()));
+                CAMPFIRE_POTS.add(registerBlockWithItem(tier, properties -> new BetterCampfirePotBlock(properties.mapColor(mapColor).requiresCorrectToolForDrops().sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS).strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()), color));
             }
         }
     }
@@ -130,12 +132,14 @@ public class BetterCampfirePot {
         BLOCK_ENTITIES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
         MENU_TYPES.register(modEventBus);
+
+        modContainer.registerConfig(ModConfig.Type.COMMON, BetterCampfirePotConfig.CONFIG_SPEC);
     }
 
-    public static DeferredBlock<BetterCampfirePotBlock> registerBlockWithItem(String tier, Function<BlockBehaviour.Properties, BetterCampfirePotBlock> func, CampfirePotColor color, int progressPerTick){
+    public static DeferredBlock<BetterCampfirePotBlock> registerBlockWithItem(String tier, Function<BlockBehaviour.Properties, BetterCampfirePotBlock> func, CampfirePotColor color){
         String name = tier + "_" + color.getSuffix() + "_campfire_pot";
         DeferredBlock<BetterCampfirePotBlock> toReturn = BLOCKS.registerBlock(name, func);
-        CAMPFIRE_POT_ITEMS.add(ITEMS.registerItem(name, properties -> new BetterCampfirePotItem(toReturn.get(), tier, color, progressPerTick, properties)));
+        CAMPFIRE_POT_ITEMS.add(ITEMS.registerItem(name, properties -> new BetterCampfirePotItem(toReturn.get(), tier, color, properties)));
         return toReturn;
     }
 

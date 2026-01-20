@@ -9,6 +9,7 @@ import com.cobblemon.mod.common.client.sound.instances.CancellableSoundInstance;
 import com.cobblemon.mod.common.item.components.PotComponent;
 import com.cobblemon.mod.common.util.WorldExtensionsKt;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
+import com.coolerpromc.bettercampfirepot.BetterCampfirePotConfig;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
@@ -47,6 +48,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -155,6 +158,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         super(BetterCampfirePot.BETTER_CAMPFIRE_BE.get(), pos, state);
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void clientTick(Level level, BlockPos pos, BlockState state, BetterCampfireBlockEntity campfireBlockEntity) {
         if (!level.isClientSide) return;
 
@@ -213,6 +217,10 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
 
         boolean hasChanged = false;
         boolean recipeChanged = false;
+
+        if (campfireBlockEntity.getPotItem() != null && campfireBlockEntity.getPotItem().getItem() instanceof BetterCampfirePotItem potItem){
+            campfireBlockEntity.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(potItem.tier);
+        }
 
         boolean isCookingBefore = campfireBlockEntity.cookingProgress > 0;
         BetterCampfirePotRecipe recipeBefore = campfireBlockEntity.currentRecipe;

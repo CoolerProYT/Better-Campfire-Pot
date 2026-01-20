@@ -6,6 +6,7 @@ import com.cobblemon.mod.common.block.campfirepot.CampfirePotBlock;
 import com.cobblemon.mod.common.block.entity.CampfireBlockEntity;
 import com.cobblemon.mod.common.item.CampfirePotItem;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
+import com.coolerpromc.bettercampfirepot.BetterCampfirePotConfig;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfirePotBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
@@ -61,7 +62,7 @@ public class TierUpgradeItem extends Item {
                             BetterCampfirePotItem newPotItem = optional.get();
                             ItemStack newPot = new ItemStack(newPotItem);
                             be.setPotItem(newPot);
-                            be.progressPerTick = newPotItem.progressPerTick;
+                            be.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(newPotItem.tier);
                             be.onItemUpdate(world);
                             context.getItemInHand().consume(1, player);
                             world.playSound(null, blockPos, CobblemonSounds.CAMPFIRE_POT_SET, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -104,7 +105,7 @@ public class TierUpgradeItem extends Item {
                             if (newBlockEntity instanceof BetterCampfireBlockEntity customCampfire) {
                                 if (customCampfire.getPotItem() == null || customCampfire.getPotItem().isEmpty()) {
                                     customCampfire.setPotItem(newPot);
-                                    customCampfire.progressPerTick = newPotItem.progressPerTick;
+                                    customCampfire.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(newPotItem.tier);
                                     context.getItemInHand().consume(1, player);
                                     world.playSound(null, blockPos, CobblemonSounds.CAMPFIRE_POT_SET, SoundSource.BLOCKS, 1.0F, 1.0F);
                                     return InteractionResult.SUCCESS;

@@ -11,13 +11,13 @@ public class Tiers {
     public static final String EMERALD = "emerald";
     public static final String NETHERITE = "netherite";
 
-    private static final List<String> ORDER = List.of(VANILLA, COPPER, IRON, GOLD, DIAMOND, EMERALD, NETHERITE);
+    public static final List<String> TIERS = List.of(VANILLA, COPPER, IRON, GOLD, DIAMOND, EMERALD, NETHERITE);
 
     public static String getPreviousTier(String tier) {
-        int index = ORDER.indexOf(tier);
+        int index = TIERS.indexOf(tier);
         if (index <= 0) {
             throw new IllegalArgumentException("No previous tier for " + tier);
         }
-        return ORDER.get(index - 1);
+        return TIERS.get(index - 1);
     }
 }

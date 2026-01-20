@@ -1,0 +1,2 @@
+- Fixed dedicated server unable to start
+- Campfire Pot processing speed can be modified via config now
