@@ -3,6 +3,7 @@ package com.coolerpromc.bettercampfirepot.item;
 import com.cobblemon.mod.common.CobblemonSounds;
 import com.cobblemon.mod.common.block.campfirepot.CampfirePotColor;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
+import com.coolerpromc.bettercampfirepot.BetterCampfirePotConfig;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import net.minecraft.ChatFormatting;
@@ -30,13 +31,11 @@ import java.util.List;
 public class BetterCampfirePotItem extends BlockItem {
     public final String tier;
     public final CampfirePotColor color;
-    public final int progressPerTick;
 
-    public BetterCampfirePotItem(Block block, String tier, CampfirePotColor color, int progressPerTick, Properties properties) {
+    public BetterCampfirePotItem(Block block, String tier, CampfirePotColor color, Properties properties) {
         super(block, properties);
         this.tier = tier;
         this.color = color;
-        this.progressPerTick = progressPerTick;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class BetterCampfirePotItem extends BlockItem {
                 if (newBlockEntity instanceof BetterCampfireBlockEntity customCampfire) {
                     if (customCampfire.getPotItem() == null || customCampfire.getPotItem().isEmpty()) {
                         customCampfire.setPotItem(context.getItemInHand().split(1));
-                        customCampfire.progressPerTick = this.progressPerTick;
+                        customCampfire.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(this.tier);
                         context.getItemInHand().consume(1, player);
                         world.playSound(null, blockPos, CobblemonSounds.CAMPFIRE_POT_SET, SoundSource.BLOCKS, 1.0F, 1.0F);
                         return InteractionResult.SUCCESS;
@@ -103,6 +102,6 @@ public class BetterCampfirePotItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.translatable("tooltip.bettercampfirepot.speed", (float) progressPerTick / 2f).withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.bettercampfirepot.speed", (float) BetterCampfirePotConfig.CONFIG.getTickByTier(this.tier) / 2f).withStyle(ChatFormatting.GRAY));
     }
 }

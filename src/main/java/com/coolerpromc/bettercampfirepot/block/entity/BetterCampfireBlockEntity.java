@@ -8,6 +8,7 @@ import com.cobblemon.mod.common.client.sound.BlockEntitySoundTracker;
 import com.cobblemon.mod.common.item.components.PotComponent;
 import com.cobblemon.mod.common.util.WorldExtensionsKt;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
+import com.coolerpromc.bettercampfirepot.BetterCampfirePotConfig;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
@@ -169,6 +170,10 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
 
         boolean hasChanged = false;
         boolean recipeChanged = false;
+
+        if (campfireBlockEntity.getPotItem() != null && campfireBlockEntity.getPotItem().getItem() instanceof BetterCampfirePotItem potItem){
+            campfireBlockEntity.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(potItem.tier);
+        }
 
         boolean isCookingBefore = campfireBlockEntity.cookingProgress > 0;
         BetterCampfirePotRecipe recipeBefore = campfireBlockEntity.currentRecipe;

@@ -37,6 +37,7 @@
     "java": ">=21",
     "fabric-api": "*",
     "fabric-language-kotlin": "*",
-    "cobblemon": ">=1.7.0"
+    "cobblemon": ">=1.7.0",
+    "forgeconfigapiport": ">=21.1.6"
   }
 }

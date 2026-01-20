@@ -14,6 +14,7 @@ import com.coolerpromc.bettercampfirepot.network.ToggleCookingPotLidPacket;
 import com.coolerpromc.bettercampfirepot.recipe.BetterCampfirePotRecipe;
 import com.coolerpromc.bettercampfirepot.util.Tiers;
 import com.mojang.datafixers.util.Pair;
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -27,7 +28,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.fml.config.ModConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +59,10 @@ public class BetterCampfirePot implements ModInitializer {
     public static List<TierUpgradeItem> TIER_UPGRADES = new ArrayList<>();
 
     private static void registerCampfirePots(){
-        List<Pair<String, Integer>> tiers = List.of(Pair.of(Tiers.COPPER, 5), Pair.of(Tiers.IRON, 10), Pair.of(Tiers.GOLD, 20), Pair.of(Tiers.DIAMOND, 40), Pair.of(Tiers.EMERALD, 60), Pair.of(Tiers.NETHERITE, 80));
+        List<String> tiers = new ArrayList<>(Tiers.TIERS);
+        tiers.removeFirst();
 
-        for (Pair<String, Integer> tier : tiers){
+        for (String tier : tiers){
             for (CampfirePotColor color : CampfirePotColor.getEntries()){
                 MapColor mapColor = switch (color){
                     case RED -> MapColor.COLOR_RED;
@@ -71,7 +73,7 @@ public class BetterCampfirePot implements ModInitializer {
                     case WHITE -> MapColor.COLOR_LIGHT_GRAY;
                     case PINK -> MapColor.COLOR_PINK;
                 };
-                CAMPFIRE_POTS.add(registerBlockWithItem(tier.getFirst(), properties -> new BetterCampfirePotBlock(properties.mapColor(mapColor).requiresCorrectToolForDrops().sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS).strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()), color, tier.getSecond()));
+                CAMPFIRE_POTS.add(registerBlockWithItem(tier, properties -> new BetterCampfirePotBlock(properties.mapColor(mapColor).requiresCorrectToolForDrops().sound(CobblemonSounds.CAMPFIRE_POT_SOUNDS).strength(0.5F).pushReaction(PushReaction.BLOCK).noOcclusion()), color));
             }
         }
     }
@@ -128,12 +130,14 @@ public class BetterCampfirePot implements ModInitializer {
         PayloadTypeRegistry.playC2S().register(ToggleCookingPotLidPacket.TYPE, ToggleCookingPotLidPacket.STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ToggleCookingPotLidPacket.TYPE, ToggleCookingPotLidPacket::handle);
         ServerLifecycleEvents.SERVER_STARTED.register(BetterCampfirePotRecipe::onServerStarted);
+
+        NeoForgeConfigRegistry.INSTANCE.register(MODID, ModConfig.Type.COMMON, BetterCampfirePotConfig.CONFIG_SPEC);
 	}
 
-    public static BetterCampfirePotBlock registerBlockWithItem(String tier, Function<BlockBehaviour.Properties, BetterCampfirePotBlock> func, CampfirePotColor color, int progressPerTick){
+    public static BetterCampfirePotBlock registerBlockWithItem(String tier, Function<BlockBehaviour.Properties, BetterCampfirePotBlock> func, CampfirePotColor color){
         String name = tier + "_" + color.getSuffix() + "_campfire_pot";
         BetterCampfirePotBlock toReturn = Registry.register(BuiltInRegistries.BLOCK, id(name), func.apply(BlockBehaviour.Properties.of()));
-        CAMPFIRE_POT_ITEMS.add(Registry.register(BuiltInRegistries.ITEM, id(name), new BetterCampfirePotItem(toReturn, tier, color, progressPerTick, new Item.Properties())));
+        CAMPFIRE_POT_ITEMS.add(Registry.register(BuiltInRegistries.ITEM, id(name), new BetterCampfirePotItem(toReturn, tier, color, new Item.Properties())));
         return toReturn;
     }
 

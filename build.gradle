@@ -29,6 +29,10 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+    maven {
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
 }
 
 fabricApi {
@@ -46,6 +50,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
 
     modImplementation "curse.maven:cobblemon-687131:7273170"
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.1.6"
 
     modCompileOnly("mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}")
     modRuntimeOnly("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}")
@@ -114,13 +119,13 @@ publishMods {
         projectId = "1437573"
         accessToken = findProperty("CF_TOKEN")
         minecraftVersions.add(minecraft_version)
-        requires("cobblemon")
+        requires("cobblemon", "forge-config-api-port")
     }
 
     modrinth {
         projectId = "iTqv0DeF"
         accessToken = findProperty("MODRINTH_TOKEN")
         minecraftVersions.add(minecraft_version)
-        requires("cobblemon")
+        requires("cobblemon", "forge-config-api-port")
     }
 }
