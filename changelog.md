@@ -1,2 +1,1 @@
-- Fixed dedicated server unable to start
-- Campfire Pot processing speed can be modified via config now
+- Fixed Campfire Pot Item are consumed 2 time when it is used on a Campfire Block

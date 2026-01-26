@@ -80,7 +80,6 @@ public class BetterCampfirePotItem extends BlockItem {
                     if (customCampfire.getPotItem() == null || customCampfire.getPotItem().isEmpty()) {
                         customCampfire.setPotItem(context.getItemInHand().split(1));
                         customCampfire.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(this.tier);
-                        context.getItemInHand().consume(1, player);
                         world.playSound(null, blockPos, CobblemonSounds.CAMPFIRE_POT_SET, SoundSource.BLOCKS, 1.0F, 1.0F);
                         return InteractionResult.SUCCESS;
                     }
