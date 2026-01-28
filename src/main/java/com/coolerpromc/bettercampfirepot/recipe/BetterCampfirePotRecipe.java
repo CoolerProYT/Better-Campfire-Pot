@@ -60,7 +60,6 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
                     if (neededCount <= 0) break;
                 }
             }
-
             if (neededCount > 0) {
                 return false;
             }
@@ -92,6 +91,7 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
             CookingPotRecipe recipe = holder.value();
             Map<Ingredient, Integer> ingredients = new HashMap<>();
             for (Ingredient ingredient : recipe.getIngredients()){
+                if (ingredient.isEmpty()) continue;
                 if (ingredients.containsKey(ingredient)){
                     ingredients.put(ingredient, ingredients.get(ingredient) + 1);
                 } else {
@@ -107,6 +107,7 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
             CookingPotShapelessRecipe recipe = holder.value();
             Map<Ingredient, Integer> ingredients = new HashMap<>();
             for (Ingredient ingredient : recipe.getIngredients()){
+                if (ingredient.isEmpty()) continue;
                 if (ingredients.containsKey(ingredient)){
                     ingredients.put(ingredient, ingredients.get(ingredient) + 1);
                 } else {
@@ -116,7 +117,6 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
             List<Pair<Ingredient, Integer>> ing = new ArrayList<>();
             ingredients.forEach((ingredient, integer) -> ing.add(new Pair<>(ingredient, integer)));
             RECIPES.add(new BetterCampfirePotRecipe(ing, recipe.getResultItem(event.getServer().registryAccess()), recipe.getSeasoningTag(), recipe.getSeasoningProcessors()));
-            ItemStack result = recipe.getResultItem(event.getServer().registryAccess());
         });
     }
 }

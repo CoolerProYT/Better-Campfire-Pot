@@ -57,7 +57,6 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
         cookButton.setSelected(menu.containerData.get(IS_LID_OPEN_INDEX) == 0);
         cookButton.setPosition(this.leftPos + 97, topPos + 56);
 
-
         Slot resultSlot = menu.getSlot(48);
         var recipe = menu.blockEntity.currentRecipe;
         if (recipe != null && !recipe.result().isEmpty() && !resultSlot.hasItem()) {

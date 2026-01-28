@@ -1,1 +1,1 @@
-- Fixed Campfire Pot Item are consumed 2 time when it is used on a Campfire Block
+- Fixed `cooking_pot_shaped` recipe with empty ingredient unable to craft

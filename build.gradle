@@ -101,6 +101,10 @@ dependencies {
 
     implementation "curse.maven:kotlin-for-forge-351264:6994056"
     implementation "curse.maven:cobblemon-687131:7273151"
+    implementation "curse.maven:cobblemon-mega-showdown-1189523:7523097"
+    implementation "curse.maven:architectury-api-419699:5786327"
+    implementation "curse.maven:owo-lib-532610:6785734"
+    implementation "curse.maven:accessories-938917:7046407"
     implementation "curse.maven:jade-324717:7428884"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.0"
