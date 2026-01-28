@@ -396,9 +396,9 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("CookingProgress", this.cookingProgress);
-        ContainerHelper.saveAllItems(tag.getCompound("inputHandler"), inputHandler.items, registries);
-        ContainerHelper.saveAllItems(tag.getCompound("seasoningHandler"), seasoningHandler.items, registries);
-        ContainerHelper.saveAllItems(tag.getCompound("outputHandler"), outputHandler.items, registries);
+        tag.put("inputHandler", ContainerHelper.saveAllItems(new CompoundTag(), inputHandler.items, registries));
+        tag.put("seasoningHandler", ContainerHelper.saveAllItems(new CompoundTag(), seasoningHandler.items, registries));
+        tag.put("outputHandler", ContainerHelper.saveAllItems(new CompoundTag(), outputHandler.items, registries));
         tag.putInt("progressPerTick", progressPerTick);
 
         if (potComponent != null) {

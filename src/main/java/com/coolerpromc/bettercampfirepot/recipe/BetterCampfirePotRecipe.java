@@ -89,6 +89,7 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
             CookingPotRecipe recipe = holder.value();
             Map<IngredientKey, Integer> ingredients = new HashMap<>();
             for (Ingredient ingredient : recipe.getIngredients()){
+                if (ingredient.isEmpty()) continue;
                 IngredientKey key = IngredientKey.of(ingredient);
                 ingredients.merge(key, 1, Integer::sum);
             }
@@ -101,6 +102,7 @@ public record BetterCampfirePotRecipe(List<Pair<Ingredient, Integer>> ingredient
             CookingPotShapelessRecipe recipe = holder.value();
             Map<IngredientKey, Integer> ingredients = new HashMap<>();
             for (Ingredient ingredient : recipe.getIngredients()){
+                if (ingredient.isEmpty()) continue;
                 IngredientKey key = IngredientKey.of(ingredient);
                 ingredients.merge(key, 1, Integer::sum);
             }
