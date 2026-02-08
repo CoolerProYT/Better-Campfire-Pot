@@ -1,2 +1,1 @@
-- Fixed `cooking_pot_shaped` recipe with empty ingredient unable to craft
-- Fixed item not saving to campfire pot correctly
+- Input Slot, Seasoning Slot, Output Slot insert/extract side can be modified in Campfire Pot screen now

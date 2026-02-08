@@ -13,5 +13,14 @@
 
   "item.bettercampfirepot.tier_upgrade_item": "%s to %s Tier Upgrade",
 
-  "tooltip.bettercampfirepot.speed": "Speed: %sx"
+  "tooltip.bettercampfirepot.speed": "Speed: %sx",
+  "tooltip.bettercampfirepot.toggle_config": "Toggle Config",
+
+  "screen.bettercampfirepot.side_top": "Top",
+  "screen.bettercampfirepot.side_bottom": "Bottom",
+  "screen.bettercampfirepot.side_front": "Front",
+  "screen.bettercampfirepot.side_back": "Back",
+  "screen.bettercampfirepot.side_left": "Left",
+  "screen.bettercampfirepot.side_right": "Right",
+  "screen.bettercampfirepot.change_slot": "Click to Change Slot"
 }

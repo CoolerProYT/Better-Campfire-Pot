@@ -5,10 +5,15 @@ import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JeiPlugin
 public class ModJEIPlugin implements IModPlugin {
@@ -25,5 +30,16 @@ public class ModJEIPlugin implements IModPlugin {
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(CookingPotScreen.class, 96, 39, 22, 12, CampfirePotRecipeCategory.Companion.getRECIPE_TYPE());
+        registration.addGuiContainerHandler(CookingPotScreen.class, new IGuiContainerHandler<>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(CookingPotScreen screen) {
+                List<Rect2i> areas = new ArrayList<>();
+                areas.add(new Rect2i(screen.getGuiLeft() + screen.getXSize() - 1, screen.getGuiTop() + 20, 30, 30));
+                if (screen.isConfigOpened()){
+                    areas.add(new Rect2i(screen.getGuiLeft() + screen.getXSize() + 4, screen.getGuiTop() + 50, 30, 30));
+                }
+                return areas;
+            }
+        });
     }
 }

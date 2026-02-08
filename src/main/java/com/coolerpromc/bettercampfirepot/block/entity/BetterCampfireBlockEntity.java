@@ -13,7 +13,9 @@ import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
 import com.coolerpromc.bettercampfirepot.recipe.BetterCampfirePotRecipe;
+import com.coolerpromc.bettercampfirepot.util.CampfirePotSlot;
 import com.coolerpromc.bettercampfirepot.util.KotlinHelper;
+import com.coolerpromc.bettercampfirepot.util.Side;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -37,6 +39,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
@@ -50,6 +53,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -81,6 +85,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     public int time = 0;
     public BetterCampfirePotRecipe currentRecipe;
     public int progressPerTick = 2;
+    private Map<Side, CampfirePotSlot> capabilityBySide = new HashMap<>();
 
     public List<ItemStack> lastSeasoningStacks = new ArrayList<>();
 
@@ -163,6 +168,16 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
 
     public BetterCampfireBlockEntity(BlockPos pos, BlockState state) {
         super(BetterCampfirePot.BETTER_CAMPFIRE_BE, pos, state);
+        initCapabilityBySide();
+    }
+
+    private void initCapabilityBySide(){
+        capabilityBySide.putIfAbsent(Side.TOP, CampfirePotSlot.SEASONING);
+        capabilityBySide.putIfAbsent(Side.BOTTOM, CampfirePotSlot.OUTPUT);
+        capabilityBySide.putIfAbsent(Side.FRONT, CampfirePotSlot.INPUT);
+        capabilityBySide.putIfAbsent(Side.BACK, CampfirePotSlot.INPUT);
+        capabilityBySide.putIfAbsent(Side.LEFT, CampfirePotSlot.INPUT);
+        capabilityBySide.putIfAbsent(Side.RIGHT, CampfirePotSlot.INPUT);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, BetterCampfireBlockEntity campfireBlockEntity) {
@@ -400,6 +415,10 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         tag.put("seasoningHandler", ContainerHelper.saveAllItems(new CompoundTag(), seasoningHandler.items, registries));
         tag.put("outputHandler", ContainerHelper.saveAllItems(new CompoundTag(), outputHandler.items, registries));
         tag.putInt("progressPerTick", progressPerTick);
+        if (capabilityBySide.isEmpty()){
+            this.initCapabilityBySide();
+        }
+        tag.put("capabilityBySide", ExtraCodecs.strictUnboundedMap(Side.CODEC, CampfirePotSlot.CODEC).encodeStart(NbtOps.INSTANCE, capabilityBySide).getOrThrow());
 
         if (potComponent != null) {
             PotComponent.Companion.getCODEC().encodeStart(NbtOps.INSTANCE, potComponent).result().ifPresent(encoded -> tag.put("PotComponent", encoded));
@@ -418,6 +437,10 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         ContainerHelper.loadAllItems(tag.getCompound("seasoningHandler"), seasoningHandler.items, registries);
         ContainerHelper.loadAllItems(tag.getCompound("outputHandler"), outputHandler.items, registries);
         this.progressPerTick = tag.getInt("progressPerTick");
+        this.capabilityBySide = new HashMap<>(ExtraCodecs.strictUnboundedMap(Side.CODEC, CampfirePotSlot.CODEC).parse(NbtOps.INSTANCE, tag.getCompound("capabilityBySide")).getOrThrow());
+        if(capabilityBySide.isEmpty()){
+            this.initCapabilityBySide();
+        }
 
         if (tag.contains("PotComponent")) {
             PotComponent.Companion.getCODEC().parse(NbtOps.INSTANCE, tag.getCompound("PotComponent")).result().ifPresent(component -> this.potComponent = component);
@@ -507,14 +530,32 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     }
 
     public @Nullable Storage<ItemVariant> getCapability(@Nullable Direction direction) {
-        if (direction == Direction.DOWN){
-            return outputStorage;
-        }
-        else if (direction == Direction.UP){
-            return seasoningStorage;
-        } else if (direction != null) {
-            return inputStorage;
-        }
-        return null;
+        if (direction == null) return null;
+
+        Direction facing = getBlockState().getValue(HorizontalDirectionalBlock.FACING);
+        Side side = Side.fromDirection(direction, facing);
+
+        CampfirePotSlot slot = getCapabilityBySide(side);
+        if (slot == null) return null;
+
+        return getItemHandlerForSlot(slot);
+    }
+
+    private Storage<ItemVariant> getItemHandlerForSlot(CampfirePotSlot slot){
+        return switch (slot){
+            case INPUT -> inputStorage;
+            case SEASONING -> seasoningStorage;
+            case OUTPUT -> outputStorage;
+        };
+    }
+
+    public CampfirePotSlot getCapabilityBySide(Side side){
+        return capabilityBySide.get(side);
+    }
+
+    public void setCapabilityBySide(Side side, CampfirePotSlot slot) {
+        this.capabilityBySide.put(side, slot);
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
     }
 }

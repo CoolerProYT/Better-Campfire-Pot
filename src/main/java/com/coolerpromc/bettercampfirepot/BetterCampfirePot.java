@@ -10,6 +10,7 @@ import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.item.TierUpgradeItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
+import com.coolerpromc.bettercampfirepot.network.CapabilityChangeSyncC2SPacket;
 import com.coolerpromc.bettercampfirepot.network.ToggleCookingPotLidPacket;
 import com.coolerpromc.bettercampfirepot.recipe.BetterCampfirePotRecipe;
 import com.coolerpromc.bettercampfirepot.util.Tiers;
@@ -128,7 +129,9 @@ public class BetterCampfirePot implements ModInitializer {
         ItemStorage.SIDED.registerForBlockEntity(BetterCampfireBlockEntity::getCapability, BetterCampfirePot.BETTER_CAMPFIRE_BE);
 
         PayloadTypeRegistry.playC2S().register(ToggleCookingPotLidPacket.TYPE, ToggleCookingPotLidPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(CapabilityChangeSyncC2SPacket.TYPE, CapabilityChangeSyncC2SPacket.STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ToggleCookingPotLidPacket.TYPE, ToggleCookingPotLidPacket::handle);
+        ServerPlayNetworking.registerGlobalReceiver(CapabilityChangeSyncC2SPacket.TYPE, CapabilityChangeSyncC2SPacket::handle);
         ServerLifecycleEvents.SERVER_STARTED.register(BetterCampfirePotRecipe::onServerStarted);
 
         NeoForgeConfigRegistry.INSTANCE.register(MODID, ModConfig.Type.COMMON, BetterCampfirePotConfig.CONFIG_SPEC);
