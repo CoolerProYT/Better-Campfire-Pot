@@ -3,15 +3,23 @@ package com.coolerpromc.bettercampfirepot.menu;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.menu.widget.BetterCookButton;
+import com.coolerpromc.bettercampfirepot.menu.widget.ChangeCapabilityButton;
+import com.coolerpromc.bettercampfirepot.menu.widget.ToggleConfigButton;
+import com.coolerpromc.bettercampfirepot.network.CapabilityChangeSyncC2SPacket;
 import com.coolerpromc.bettercampfirepot.network.ToggleCookingPotLidPacket;
+import com.coolerpromc.bettercampfirepot.util.Side;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.cobblemon.mod.common.util.MiscUtilsKt.cobblemonResource;
 import static com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity.IS_LID_OPEN_INDEX;
@@ -21,6 +29,8 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
     private final ResourceLocation COOK_PROGRESS_SPRITE = cobblemonResource("textures/gui/campfirepot/cook_progress.png");
 
     private BetterCookButton cookButton;
+    private ToggleConfigButton toggleConfigButton;
+    private final List<ChangeCapabilityButton> capabilityButtons = new ArrayList<>();
 
     public CookingPotScreen(CookingPotMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -35,12 +45,45 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
 
         if (cookButton != null) removeWidget(cookButton);
         if (menu.blockEntity.getPotItem() != null && menu.blockEntity.getPotItem().getItem() instanceof BetterCampfirePotItem campfirePotItem){
-            cookButton = new BetterCookButton(this.leftPos + 97, this.topPos + 56, menu.containerData.get(IS_LID_OPEN_INDEX) == 0, campfirePotItem, button -> {
+            cookButton = new BetterCookButton(this.leftPos + 97, this.topPos + 56, menu.containerData.get(IS_LID_OPEN_INDEX) == 1, campfirePotItem, button -> {
                 boolean isLidClosed = menu.containerData.get(IS_LID_OPEN_INDEX) == 0;
                 PacketDistributor.sendToServer(new ToggleCookingPotLidPacket(isLidClosed));
             });
             addRenderableWidget(cookButton);
         }
+
+        toggleConfigButton = new ToggleConfigButton(leftPos + imageWidth + 4, topPos + 25, 20, 20, button -> {
+            if (button.isToggled()){
+                openConfigScreen();
+            }
+            else{
+                closeConfigScreen();
+            }
+        });
+        addRenderableWidget(toggleConfigButton);
+
+        int x = leftPos + imageWidth + 1;
+        int y = topPos + 49;
+
+        capabilityButtons.add(new ChangeCapabilityButton(x + 9, y + 4, 8, 8, this::onPress, Side.TOP, this.menu.blockEntity.getCapabilityBySide(Side.TOP)));
+        capabilityButtons.add(new ChangeCapabilityButton(x + 1, y + 12, 8, 8, this::onPress, Side.LEFT, this.menu.blockEntity.getCapabilityBySide(Side.LEFT)));
+        capabilityButtons.add(new ChangeCapabilityButton(x + 9, y + 12, 8, 8, this::onPress, Side.FRONT, this.menu.blockEntity.getCapabilityBySide(Side.FRONT)));
+        capabilityButtons.add(new ChangeCapabilityButton(x + 17, y + 12, 8, 8, this::onPress, Side.RIGHT, this.menu.blockEntity.getCapabilityBySide(Side.RIGHT)));
+        capabilityButtons.add(new ChangeCapabilityButton(x + 1, y + 20, 8, 8, this::onPress, Side.BACK, this.menu.blockEntity.getCapabilityBySide(Side.BACK)));
+        capabilityButtons.add(new ChangeCapabilityButton(x + 9, y + 20, 8, 8, this::onPress, Side.BOTTOM, this.menu.blockEntity.getCapabilityBySide(Side.BOTTOM)));
+    }
+
+    private void onPress(ChangeCapabilityButton button){
+        button.setSlot(button.getSlot().next());
+        PacketDistributor.sendToServer(new CapabilityChangeSyncC2SPacket(this.menu.blockEntity.getBlockPos(), button.getSide(), button.getSlot()));
+    }
+
+    private void openConfigScreen(){
+        this.capabilityButtons.forEach(this::addRenderableWidget);
+    }
+
+    private void closeConfigScreen(){
+        this.capabilityButtons.forEach(this::removeWidget);
     }
 
     @Override
@@ -48,6 +91,10 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
         guiGraphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight, 176, 166);
         int cookProgress = (int) Math.ceil(menu.getBurnProgress() * 22);
         guiGraphics.blit(COOK_PROGRESS_SPRITE, leftPos + 96, topPos + 39, 0, 0, cookProgress, 12, 22, 12);
+        guiGraphics.blitWithBorder(BetterCampfirePot.id("textures/gui/sprites/gui.png"), leftPos + imageWidth - 1, topPos + 20, 0, 0, 30, 30, 24, 24, 4);
+        if (toggleConfigButton.isToggled()){
+            guiGraphics.blitWithBorder(BetterCampfirePot.id("textures/gui/sprites/gui.png"), leftPos + imageWidth - 1, topPos + 50, 24, 0, 30, 30, 24, 24, 4);
+        }
     }
 
     @Override
@@ -77,6 +124,7 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
             }
         }
 
+        renderSlotOutline(guiGraphics);
 
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
@@ -89,5 +137,43 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
             guiGraphics.fill(x,y,x+16,y+16,822018048);
         }
         super.renderSlot(guiGraphics, slot);
+    }
+
+    public boolean isConfigOpened(){
+        return toggleConfigButton.isToggled();
+    }
+
+    private void renderSlotOutline(GuiGraphics guiGraphics){
+        for (ChangeCapabilityButton btn : capabilityButtons){
+            if (btn.isHovered()){
+                int baseX = leftPos;
+                int baseY = topPos;
+                int maxX = baseX;
+                int maxY = baseY;
+
+                switch (btn.getSlot()){
+                    case INPUT:
+                        baseX += 32;
+                        baseY += 17;
+                        maxX += 54 + 32;
+                        maxY += 54 + 17;
+                        break;
+                    case SEASONING:
+                        baseX += 109;
+                        baseY += 17;
+                        maxX += 54 + 109;
+                        maxY += 18 + 17;
+                        break;
+                    case OUTPUT:
+                        baseX += 123;
+                        baseY += 50;
+                        maxX += 26 + 123;
+                        maxY += 26 + 50;
+                        break;
+                }
+
+                guiGraphics.fill(baseX, baseY, maxX, maxY, FastColor.ARGB32.color(0x66, btn.getSlot().color()));
+            }
+        }
     }
 }

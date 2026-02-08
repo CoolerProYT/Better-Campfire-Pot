@@ -106,9 +106,6 @@ dependencies {
     implementation "curse.maven:owo-lib-532610:6785734"
     implementation "curse.maven:accessories-938917:7046407"
     implementation "curse.maven:jade-324717:7428884"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.0"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:2.2.0"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -151,6 +148,10 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 idea {

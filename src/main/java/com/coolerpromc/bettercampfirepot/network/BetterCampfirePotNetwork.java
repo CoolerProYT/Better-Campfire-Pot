@@ -12,5 +12,6 @@ public class BetterCampfirePotNetwork {
         var registrar = event.registrar("1");
 
         registrar.playToServer(ToggleCookingPotLidPacket.TYPE, ToggleCookingPotLidPacket.STREAM_CODEC, ToggleCookingPotLidPacket::handle);
+        registrar.playToServer(CapabilityChangeSyncC2SPacket.TYPE, CapabilityChangeSyncC2SPacket.STREAM_CODEC, CapabilityChangeSyncC2SPacket::handle);
     }
 }

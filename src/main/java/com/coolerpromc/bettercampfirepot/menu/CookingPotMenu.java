@@ -20,7 +20,7 @@ public class CookingPotMenu extends AbstractContainerMenu {
     public final BetterCampfireBlockEntity blockEntity;
 
     public CookingPotMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInventory, (BetterCampfireBlockEntity) playerInventory.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(4));
+        this(containerId, playerInventory, (BetterCampfireBlockEntity) playerInventory.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(5));
     }
 
     public CookingPotMenu(int containerId, Inventory playerInventory, BetterCampfireBlockEntity blockEntity, ContainerData containerData){

@@ -25,7 +25,7 @@ public record ToggleCookingPotLidPacket(boolean isLidClosed) implements CustomPa
         return TYPE;
     }
 
-    public static void handle(ToggleCookingPotLidPacket packet, IPayloadContext context){
+    public void handle(IPayloadContext context){
         if (context.player() instanceof ServerPlayer player){
             if (!(player.containerMenu instanceof CookingPotMenu menu)){
                 BetterCampfirePot.LOGGER.debug("Player {} interacted with invalid menu {}", player, player.containerMenu);
@@ -33,7 +33,7 @@ public record ToggleCookingPotLidPacket(boolean isLidClosed) implements CustomPa
             }
 
             if (menu.blockEntity instanceof BetterCampfireBlockEntity){
-                menu.blockEntity.toggleLid(packet.isLidClosed());
+                menu.blockEntity.toggleLid(this.isLidClosed());
             }
         }
     }
