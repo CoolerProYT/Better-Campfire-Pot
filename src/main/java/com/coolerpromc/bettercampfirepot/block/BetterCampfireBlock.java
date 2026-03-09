@@ -6,12 +6,15 @@ import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import com.coolerpromc.bettercampfirepot.client.BetterCampfireBEClient;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
+import com.coolerpromc.bettercampfirepot.network.ValidItemSyncPacket;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -233,6 +236,7 @@ public class BetterCampfireBlock extends BaseEntityBlock implements SimpleWaterl
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof BetterCampfireBlockEntity campfireBlockEntity) {
             player.openMenu(campfireBlockEntity);
+            ServerPlayNetworking.send((ServerPlayer) player, new ValidItemSyncPacket(campfireBlockEntity.getValidInputItem(), campfireBlockEntity.getValidSeasoningItem()));
         }
     }
 

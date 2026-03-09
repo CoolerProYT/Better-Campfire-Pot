@@ -2,8 +2,10 @@ package com.coolerpromc.bettercampfirepot;
 
 import com.coolerpromc.bettercampfirepot.block.entity.renderer.BetterCampfireBER;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotScreen;
+import com.coolerpromc.bettercampfirepot.network.ValidItemSyncPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -17,5 +19,7 @@ public class BetterCampfirePotClient implements ClientModInitializer {
 
         MenuScreens.register(BetterCampfirePot.BETTER_CAMPFIRE_MENU, CookingPotScreen::new);
         BlockEntityRenderers.register(BetterCampfirePot.BETTER_CAMPFIRE_BE, BetterCampfireBER::new);
+
+        ClientPlayNetworking.registerGlobalReceiver(ValidItemSyncPacket.TYPE, ValidItemSyncPacket::handle);
     }
 }

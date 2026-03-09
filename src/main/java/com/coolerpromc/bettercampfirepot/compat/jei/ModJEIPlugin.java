@@ -35,6 +35,7 @@ public class ModJEIPlugin implements IModPlugin {
             public List<Rect2i> getGuiExtraAreas(CookingPotScreen screen) {
                 List<Rect2i> areas = new ArrayList<>();
                 areas.add(new Rect2i(screen.getGuiLeft() + screen.getXSize() - 1, screen.getGuiTop() + 20, 30, 30));
+                areas.add(new Rect2i(screen.getGuiLeft() - 29, screen.getGuiTop() + 20, 30, 52));
                 if (screen.isConfigOpened()){
                     areas.add(new Rect2i(screen.getGuiLeft() + screen.getXSize() + 4, screen.getGuiTop() + 50, 30, 30));
                 }

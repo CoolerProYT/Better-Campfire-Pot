@@ -28,6 +28,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -50,6 +52,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -70,6 +73,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     public static final int COOKING_PROGRESS_TOTAL_TIME_INDEX = 1;
     public static final int IS_LID_OPEN_INDEX = 2;
     public static final int COOKING_POT_COLOR_INDEX = 3;
+    public static final int IS_SLOT_LOCKED_INDEX = 4;
 
     public static final int BASE_BROTH_COLOR = 0xFDFACF;
     public static final int BASE_BROTH_BUBBLE_COLOR = 0xFFFEFDE4;
@@ -86,6 +90,9 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     public BetterCampfirePotRecipe currentRecipe;
     public int progressPerTick = 2;
     private Map<Side, CampfirePotSlot> capabilityBySide = new HashMap<>();
+    private final NonNullList<Item> validInputItem = NonNullList.withSize(9, Items.AIR);
+    private final NonNullList<Item> validSeasoningItem = NonNullList.withSize(3, Items.AIR);
+    private boolean lockSlot = false;
 
     public List<ItemStack> lastSeasoningStacks = new ArrayList<>();
 
@@ -96,6 +103,14 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
             if (level != null){
                 onItemUpdate(level);
             }
+        }
+
+        @Override
+        public boolean canPlaceItem(int slot, ItemStack stack) {
+            if (!lockSlot){
+                return true;
+            }
+            return stack.is(BetterCampfireBlockEntity.this.validInputItem.get(slot));
         }
     };
     public final SimpleContainer seasoningHandler = new SimpleContainer(3){
@@ -108,9 +123,13 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         }
 
         @Override
-        public boolean canPlaceItem(int i, ItemStack itemStack) {
+        public boolean canPlaceItem(int slot, ItemStack stack) {
             if (currentRecipe == null) return false;
-            return itemStack.is(currentRecipe.seasoningTag());
+            boolean isSeasoningItem = stack.is(currentRecipe.seasoningTag());
+            if (!lockSlot && isSeasoningItem){
+                return true;
+            }
+            return isSeasoningItem && stack.is(BetterCampfireBlockEntity.this.validSeasoningItem.get(slot));
         }
     };
     public SimpleContainer outputHandler = new SimpleContainer(1){
@@ -146,6 +165,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
                     }
                     yield 0;
                 }
+                case IS_SLOT_LOCKED_INDEX -> BetterCampfireBlockEntity.this.lockSlot ? 1 : 0;
                 default -> 0;
             };
         }
@@ -157,12 +177,13 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
                 case COOKING_PROGRESS_TOTAL_TIME_INDEX -> BetterCampfireBlockEntity.this.cookingTotalTime = value;
                 case IS_LID_OPEN_INDEX -> BetterCampfireBlockEntity.this.toggleLid(value == 1);
                 case COOKING_POT_COLOR_INDEX -> {}
+                case IS_SLOT_LOCKED_INDEX -> BetterCampfireBlockEntity.this.lockSlot = value == 1;
             }
         }
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     };
 
@@ -415,6 +436,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         tag.put("seasoningHandler", ContainerHelper.saveAllItems(new CompoundTag(), seasoningHandler.items, registries));
         tag.put("outputHandler", ContainerHelper.saveAllItems(new CompoundTag(), outputHandler.items, registries));
         tag.putInt("progressPerTick", progressPerTick);
+        tag.putBoolean("lockSlot", lockSlot);
         if (capabilityBySide.isEmpty()){
             this.initCapabilityBySide();
         }
@@ -427,6 +449,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         if (currentRecipe != null){
             BetterCampfirePotRecipe.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), currentRecipe).ifError(d -> System.out.println(d.message())).ifSuccess(encoded -> tag.put("currentRecipe", encoded));
         }
+        BuiltInRegistries.ITEM.byNameCodec().listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), validInputItem).ifError(e -> System.out.println(e.message())).ifSuccess(encoded ->  tag.put("validInputItem", encoded));
+        BuiltInRegistries.ITEM.byNameCodec().listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), validSeasoningItem).ifError(e -> System.out.println(e.message())).ifSuccess(encoded ->  tag.put("validSeasoningItem", encoded));
     }
 
     @Override
@@ -437,6 +461,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         ContainerHelper.loadAllItems(tag.getCompound("seasoningHandler"), seasoningHandler.items, registries);
         ContainerHelper.loadAllItems(tag.getCompound("outputHandler"), outputHandler.items, registries);
         this.progressPerTick = tag.getInt("progressPerTick");
+        this.lockSlot = tag.getBoolean("lockSlot");
         this.capabilityBySide = new HashMap<>(ExtraCodecs.strictUnboundedMap(Side.CODEC, CampfirePotSlot.CODEC).parse(NbtOps.INSTANCE, tag.getCompound("capabilityBySide")).getOrThrow());
         if(capabilityBySide.isEmpty()){
             this.initCapabilityBySide();
@@ -452,6 +477,18 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         else {
             this.currentRecipe = null;
         }
+        BuiltInRegistries.ITEM.byNameCodec().listOf().parse(RegistryOps.create(NbtOps.INSTANCE, registries), tag.get("validInputItem")).ifError(System.out::println).result().ifPresent(items -> {
+            this.validInputItem.clear();
+            for (int i = 0; i < items.size(); i++) {
+                this.validInputItem.set(i, items.get(i));
+            }
+        });
+        BuiltInRegistries.ITEM.byNameCodec().listOf().parse(RegistryOps.create(NbtOps.INSTANCE, registries), tag.get("validSeasoningItem")).result().ifPresent(items ->{
+            this.validSeasoningItem.clear();
+            for (int i = 0; i < items.size(); i++) {
+                this.validSeasoningItem.set(i, items.get(i));
+            }
+        });
     }
 
     @Override
@@ -557,5 +594,30 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
         this.capabilityBySide.put(side, slot);
         setChanged();
         level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
+
+    public void updateItemBySlot(){
+        for (int i = 0; i < inputHandler.getContainerSize(); i++) {
+            this.validInputItem.set(i, inputHandler.getItem(i).getItem());
+        }
+        for (int i = 0; i < seasoningHandler.getContainerSize(); i++) {
+            this.validSeasoningItem.set(i, seasoningHandler.getItem(i).getItem());
+        }
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
+
+    public void toggleLockSlot(){
+        this.lockSlot = !this.lockSlot;
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
+
+    public NonNullList<Item> getValidInputItem() {
+        return validInputItem;
+    }
+
+    public NonNullList<Item> getValidSeasoningItem() {
+        return validSeasoningItem;
     }
 }

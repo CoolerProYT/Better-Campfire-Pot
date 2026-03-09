@@ -34,7 +34,13 @@ public class CookingPotMenu extends AbstractContainerMenu {
         for (int i = 0; i < inputHandler.getContainerSize();i++){
             int x = i % 3;
             int y = i / 3;
-            addSlot(new Slot(inputHandler, i, 33 + x * 18, 18 + y * 18));
+            int finalI = i;
+            addSlot(new Slot(inputHandler, finalI, 33 + x * 18, 18 + y * 18){
+                @Override
+                public boolean mayPlace(ItemStack itemStack) {
+                    return inputHandler.canPlaceItem(finalI, itemStack);
+                }
+            });
         }
 
         SimpleContainer seasoningHandler = blockEntity.seasoningHandler;

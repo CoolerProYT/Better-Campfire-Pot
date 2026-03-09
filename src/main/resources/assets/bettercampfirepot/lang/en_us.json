@@ -15,6 +15,9 @@
 
   "tooltip.bettercampfirepot.speed": "Speed: %sx",
   "tooltip.bettercampfirepot.toggle_config": "Toggle Config",
+  "tooltip.bettercampfirepot.lock_slot": "Click to Lock Slot",
+  "tooltip.bettercampfirepot.unlock_slot": "Click to Unlock Slot",
+  "tooltip.bettercampfirepot.save": "Save Item Placement",
 
   "screen.bettercampfirepot.side_top": "Top",
   "screen.bettercampfirepot.side_bottom": "Bottom",
