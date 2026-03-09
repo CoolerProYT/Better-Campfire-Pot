@@ -20,9 +20,8 @@ import com.coolerpromc.bettercampfirepot.util.Side;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -44,6 +43,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -70,6 +70,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
     public static final int COOKING_PROGRESS_TOTAL_TIME_INDEX = 1;
     public static final int IS_LID_OPEN_INDEX = 2;
     public static final int COOKING_POT_COLOR_INDEX = 3;
+    public static final int IS_SLOT_LOCKED_INDEX = 4;
 
     public static final int BASE_BROTH_COLOR = 0xFDFACF;
     public static final int BASE_BROTH_BUBBLE_COLOR = 0xFFFEFDE4;
@@ -86,6 +87,9 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
     public BetterCampfirePotRecipe currentRecipe;
     public int progressPerTick = 2;
     private Map<Side, CampfirePotSlot> capabilityBySide = new HashMap<>();
+    private final NonNullList<Item> validInputItem = NonNullList.withSize(9, Items.AIR);
+    private final NonNullList<Item> validSeasoningItem = NonNullList.withSize(3, Items.AIR);
+    private boolean lockSlot = false;
 
     public List<ItemStack> lastSeasoningStacks = new ArrayList<>();
 
@@ -95,6 +99,14 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
             if (level != null){
                 onItemUpdate(level);
             }
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            if (!lockSlot){
+                return true;
+            }
+            return stack.is(BetterCampfireBlockEntity.this.validInputItem.get(slot));
         }
     };
     public final ItemStackHandler seasoningHandler = new ItemStackHandler(3){
@@ -108,7 +120,11 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             if (currentRecipe == null) return false;
-            return stack.is(currentRecipe.seasoningTag());
+            boolean isSeasoningItem = stack.is(currentRecipe.seasoningTag());
+            if (!lockSlot && isSeasoningItem){
+                return true;
+            }
+            return isSeasoningItem && stack.is(BetterCampfireBlockEntity.this.validSeasoningItem.get(slot));
         }
     };
     public ItemStackHandler outputHandler = new ItemStackHandler(1){
@@ -139,6 +155,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                     }
                     yield 0;
                 }
+                case IS_SLOT_LOCKED_INDEX -> BetterCampfireBlockEntity.this.lockSlot ? 1 : 0;
                 default -> 0;
             };
         }
@@ -150,12 +167,13 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                 case COOKING_PROGRESS_TOTAL_TIME_INDEX -> BetterCampfireBlockEntity.this.cookingTotalTime = value;
                 case IS_LID_OPEN_INDEX -> BetterCampfireBlockEntity.this.toggleLid(value == 1);
                 case COOKING_POT_COLOR_INDEX -> {}
+                case IS_SLOT_LOCKED_INDEX -> BetterCampfireBlockEntity.this.lockSlot = value == 1;
             }
         }
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     };
 
@@ -458,6 +476,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         tag.put("seasoningHandler", seasoningHandler.serializeNBT(registries));
         tag.put("outputHandler", outputHandler.serializeNBT(registries));
         tag.putInt("progressPerTick", progressPerTick);
+        tag.putBoolean("lockSlot", lockSlot);
         if (capabilityBySide.isEmpty()){
             this.initCapabilityBySide();
         }
@@ -470,6 +489,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         if (currentRecipe != null){
             BetterCampfirePotRecipe.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), currentRecipe).ifError(d -> System.out.println(d.message())).ifSuccess(encoded -> tag.put("currentRecipe", encoded));
         }
+        NonNullList.codecOf(BuiltInRegistries.ITEM.byNameCodec()).encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), validInputItem).ifError(e -> System.out.println(e.message())).ifSuccess(encoded ->  tag.put("validInputItem", encoded));
+        NonNullList.codecOf(BuiltInRegistries.ITEM.byNameCodec()).encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), validSeasoningItem).ifError(e -> System.out.println(e.message())).ifSuccess(encoded ->  tag.put("validSeasoningItem", encoded));
     }
 
     @Override
@@ -480,6 +501,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         seasoningHandler.deserializeNBT(registries, tag.getCompound("seasoningHandler"));
         outputHandler.deserializeNBT(registries, tag.getCompound("outputHandler"));
         this.progressPerTick = tag.getInt("progressPerTick");
+        this.lockSlot = tag.getBoolean("lockSlot");
         this.capabilityBySide = new HashMap<>(ExtraCodecs.strictUnboundedMap(Side.CODEC, CampfirePotSlot.CODEC).parse(NbtOps.INSTANCE, tag.getCompound("capabilityBySide")).getOrThrow());
         if(capabilityBySide.isEmpty()){
             this.initCapabilityBySide();
@@ -495,6 +517,18 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         else {
             this.currentRecipe = null;
         }
+        NonNullList.codecOf(BuiltInRegistries.ITEM.byNameCodec()).parse(RegistryOps.create(NbtOps.INSTANCE, registries), tag.get("validInputItem")).ifError(System.out::println).result().ifPresent(items -> {
+            this.validInputItem.clear();
+            for (int i = 0; i < items.size(); i++) {
+                this.validInputItem.set(i, items.get(i));
+            }
+        });
+        NonNullList.codecOf(BuiltInRegistries.ITEM.byNameCodec()).parse(RegistryOps.create(NbtOps.INSTANCE, registries), tag.get("validSeasoningItem")).result().ifPresent(items ->{
+            this.validSeasoningItem.clear();
+            for (int i = 0; i < items.size(); i++) {
+                this.validSeasoningItem.set(i, items.get(i));
+            }
+        });
     }
 
     @Override
@@ -596,5 +630,30 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         setChanged();
         level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
         level.invalidateCapabilities(getBlockPos());
+    }
+
+    public void updateItemBySlot(){
+        for (int i = 0; i < inputHandler.getSlots(); i++) {
+            this.validInputItem.set(i, inputHandler.getStackInSlot(i).getItem());
+        }
+        for (int i = 0; i < seasoningHandler.getSlots(); i++) {
+            this.validSeasoningItem.set(i, seasoningHandler.getStackInSlot(i).getItem());
+        }
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
+
+    public void toggleLockSlot(){
+        this.lockSlot = !this.lockSlot;
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
+
+    public NonNullList<Item> getValidInputItem() {
+        return validInputItem;
+    }
+
+    public NonNullList<Item> getValidSeasoningItem() {
+        return validSeasoningItem;
     }
 }

@@ -2,20 +2,21 @@ package com.coolerpromc.bettercampfirepot.menu;
 
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
-import com.coolerpromc.bettercampfirepot.menu.widget.BetterCookButton;
-import com.coolerpromc.bettercampfirepot.menu.widget.ChangeCapabilityButton;
-import com.coolerpromc.bettercampfirepot.menu.widget.ToggleConfigButton;
+import com.coolerpromc.bettercampfirepot.menu.widget.*;
 import com.coolerpromc.bettercampfirepot.network.CapabilityChangeSyncC2SPacket;
 import com.coolerpromc.bettercampfirepot.network.ToggleCookingPotLidPacket;
 import com.coolerpromc.bettercampfirepot.util.Side;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -23,14 +24,21 @@ import java.util.List;
 
 import static com.cobblemon.mod.common.util.MiscUtilsKt.cobblemonResource;
 import static com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity.IS_LID_OPEN_INDEX;
+import static com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity.IS_SLOT_LOCKED_INDEX;
 
 public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
     private final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(BetterCampfirePot.MODID, "textures/gui/campfire_pot.png");
+    private final ResourceLocation GUI = BetterCampfirePot.id("textures/gui/sprites/gui.png");
     private final ResourceLocation COOK_PROGRESS_SPRITE = cobblemonResource("textures/gui/campfirepot/cook_progress.png");
 
     private BetterCookButton cookButton;
     private ToggleConfigButton toggleConfigButton;
+    private LockSlotButton lockSlotButton;
+    private SavePatternButton savePatternButton;
     private final List<ChangeCapabilityButton> capabilityButtons = new ArrayList<>();
+    private NonNullList<Item> validInputItem = NonNullList.withSize(9, Items.AIR);
+    private NonNullList<Item> validSeasoningItem = NonNullList.withSize(3, Items.AIR);
+    private boolean initialized = false;
 
     public CookingPotScreen(CookingPotMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -45,7 +53,7 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
 
         if (cookButton != null) removeWidget(cookButton);
         if (menu.blockEntity.getPotItem() != null && menu.blockEntity.getPotItem().getItem() instanceof BetterCampfirePotItem campfirePotItem){
-            cookButton = new BetterCookButton(this.leftPos + 97, this.topPos + 56, menu.containerData.get(IS_LID_OPEN_INDEX) == 1, campfirePotItem, button -> {
+            cookButton = new BetterCookButton(this.leftPos + 97, this.topPos + 56, menu.containerData.get(IS_LID_OPEN_INDEX) == 0, campfirePotItem, button -> {
                 boolean isLidClosed = menu.containerData.get(IS_LID_OPEN_INDEX) == 0;
                 PacketDistributor.sendToServer(new ToggleCookingPotLidPacket(isLidClosed));
             });
@@ -61,6 +69,12 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
             }
         });
         addRenderableWidget(toggleConfigButton);
+
+        lockSlotButton = new LockSlotButton(leftPos - 24, topPos + 25,this.menu.containerData.get(IS_SLOT_LOCKED_INDEX) == 1, this.menu.blockEntity.getBlockPos());
+        addRenderableWidget(lockSlotButton);
+
+        savePatternButton = new SavePatternButton(leftPos - 24, topPos + 47, this.menu.blockEntity.getBlockPos());
+        addRenderableWidget(savePatternButton);
 
         int x = leftPos + imageWidth + 1;
         int y = topPos + 49;
@@ -91,9 +105,10 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
         guiGraphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight, 176, 166);
         int cookProgress = (int) Math.ceil(menu.getBurnProgress() * 22);
         guiGraphics.blit(COOK_PROGRESS_SPRITE, leftPos + 96, topPos + 39, 0, 0, cookProgress, 12, 22, 12);
-        guiGraphics.blitWithBorder(BetterCampfirePot.id("textures/gui/sprites/gui.png"), leftPos + imageWidth - 1, topPos + 20, 0, 0, 30, 30, 24, 24, 4);
+        guiGraphics.blitWithBorder(GUI, leftPos + imageWidth - 1, topPos + 20, 0, 0, 30, 30, 24, 24, 4);
+        guiGraphics.blitWithBorder(GUI, leftPos - 29, topPos + 20, 0, 0, 30, 52, 24, 24, 4);
         if (toggleConfigButton.isToggled()){
-            guiGraphics.blitWithBorder(BetterCampfirePot.id("textures/gui/sprites/gui.png"), leftPos + imageWidth - 1, topPos + 50, 24, 0, 30, 30, 24, 24, 4);
+            guiGraphics.blitWithBorder(GUI, leftPos + imageWidth - 1, topPos + 50, 24, 0, 30, 30, 24, 24, 4);
         }
     }
 
@@ -103,6 +118,11 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
 
         cookButton.setSelected(menu.containerData.get(IS_LID_OPEN_INDEX) == 0);
         cookButton.setPosition(this.leftPos + 97, topPos + 56);
+
+        if (!initialized){
+            initialized = true;
+            lockSlotButton.setLocked(this.menu.containerData.get(IS_SLOT_LOCKED_INDEX) == 1);
+        }
 
         Slot resultSlot = menu.getSlot(48);
         var recipe = menu.blockEntity.currentRecipe;
@@ -125,17 +145,46 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
         }
 
         renderSlotOutline(guiGraphics);
-
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
     @Override
     protected void renderSlot(GuiGraphics guiGraphics, Slot slot) {
+        int x = slot.x;
+        int y = slot.y;
+
         if (slot.index >= 45 && slot.index <= 47 && ((!menu.getCarried().isEmpty() && !slot.mayPlace(menu.getCarried())) || (slot.hasItem() && !slot.mayPlace(slot.getItem())))){
-            int x = slot.x;
-            int y = slot.y;
             guiGraphics.fill(x,y,x+16,y+16,822018048);
         }
+
+        int[] inputSlot = {36, 37, 38, 39, 40, 41, 42, 43, 44};
+        int[] seasoningSlot = {45, 46, 47};
+
+        if (lockSlotButton.isLocked()){
+            for (int i = 0; i < this.validInputItem.size(); i++) {
+                Item item = this.validInputItem.get(i);
+                if (item != Items.AIR && slot.index == inputSlot[i]){
+                    RenderSystem.enableBlend();
+                    RenderSystem.setShaderColor(1F, 1F, 1F, 0.5F);
+                    guiGraphics.renderFakeItem(item.getDefaultInstance(), x, y);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    RenderSystem.disableBlend();
+
+                }
+            }
+
+            for (int i = 0; i < this.validSeasoningItem.size(); i++) {
+                Item item = this.validSeasoningItem.get(i);
+                if (item != Items.AIR && slot.index == seasoningSlot[i]){
+                    RenderSystem.enableBlend();
+                    RenderSystem.setShaderColor(1F, 1F, 1F, 0.5F);
+                    guiGraphics.renderFakeItem(item.getDefaultInstance(), x, y);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    RenderSystem.disableBlend();
+                }
+            }
+        }
+
         super.renderSlot(guiGraphics, slot);
     }
 
@@ -175,5 +224,28 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
                 guiGraphics.fill(baseX, baseY, maxX, maxY, FastColor.ARGB32.color(0x66, btn.getSlot().color()));
             }
         }
+    }
+
+    @Override
+    protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
+        super.renderTooltip(guiGraphics, x, y);
+
+        if (lockSlotButton.isHovered()){
+            Component tooltip = lockSlotButton.isLocked() ? Component.translatable("tooltip.bettercampfirepot.unlock_slot") : Component.translatable("tooltip.bettercampfirepot.lock_slot");
+            guiGraphics.renderTooltip(this.font, tooltip, x, y);
+        }
+
+        if (savePatternButton.isHovered()){
+            Component tooltip = Component.translatable("tooltip.bettercampfirepot.save");
+            guiGraphics.renderTooltip(this.font, tooltip, x, y);
+        }
+    }
+
+    public void setValidInputItem(NonNullList<Item> validInputItem) {
+        this.validInputItem = validInputItem;
+    }
+
+    public void setValidSeasoningItem(NonNullList<Item> validSeasoningItem) {
+        this.validSeasoningItem = validSeasoningItem;
     }
 }

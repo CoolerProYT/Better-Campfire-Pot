@@ -5,12 +5,14 @@ import com.cobblemon.mod.common.util.WorldExtensionsKt;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
+import com.coolerpromc.bettercampfirepot.network.ValidItemSyncPacket;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -42,6 +44,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 public class BetterCampfireBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
@@ -232,6 +235,7 @@ public class BetterCampfireBlock extends BaseEntityBlock implements SimpleWaterl
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof BetterCampfireBlockEntity campfireBlockEntity) {
             player.openMenu(campfireBlockEntity, pos);
+            PacketDistributor.sendToPlayer((ServerPlayer) player, new ValidItemSyncPacket(campfireBlockEntity.getValidInputItem(), campfireBlockEntity.getValidSeasoningItem()));
         }
     }
 
