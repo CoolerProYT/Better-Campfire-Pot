@@ -12,6 +12,7 @@
   "tier.bettercampfirepot.netherite": "Netherite",
 
   "item.bettercampfirepot.tier_upgrade_item": "%s to %s Tier Upgrade",
+  "item.bettercampfirepot.pot": "%s %s",
 
   "tooltip.bettercampfirepot.speed": "Speed: %sx",
   "tooltip.bettercampfirepot.toggle_config": "Toggle Config",

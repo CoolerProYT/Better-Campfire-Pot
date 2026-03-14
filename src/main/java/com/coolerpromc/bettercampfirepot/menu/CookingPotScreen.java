@@ -164,23 +164,20 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
             for (int i = 0; i < this.validInputItem.size(); i++) {
                 Item item = this.validInputItem.get(i);
                 if (item != Items.AIR && slot.index == inputSlot[i]){
-                    RenderSystem.enableBlend();
-                    RenderSystem.setShaderColor(1F, 1F, 1F, 0.5F);
                     guiGraphics.renderFakeItem(item.getDefaultInstance(), x, y);
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                    RenderSystem.disableBlend();
-
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.fill(x, y, x + 16, y + 16, 200, 0xAA818181);
+                    guiGraphics.pose().popPose();
                 }
             }
 
             for (int i = 0; i < this.validSeasoningItem.size(); i++) {
                 Item item = this.validSeasoningItem.get(i);
                 if (item != Items.AIR && slot.index == seasoningSlot[i]){
-                    RenderSystem.enableBlend();
-                    RenderSystem.setShaderColor(1F, 1F, 1F, 0.5F);
                     guiGraphics.renderFakeItem(item.getDefaultInstance(), x, y);
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                    RenderSystem.disableBlend();
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.fill(x, y, x + 16, y + 16, 200, 0xAA818181);
+                    guiGraphics.pose().popPose();
                 }
             }
         }

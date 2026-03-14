@@ -95,7 +95,7 @@ public class BetterCampfirePotItem extends BlockItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.translatable("tier.bettercampfirepot." + this.tier).append(" ").append(Component.translatable("block.cobblemon.campfire_pot_" + this.color.getSuffix()));
+        return Component.translatable("item.bettercampfirepot.pot", Component.translatable("tier.bettercampfirepot." + this.tier), Component.translatable("block.cobblemon.campfire_pot_" + this.color.getSuffix()));
     }
 
     @Override
