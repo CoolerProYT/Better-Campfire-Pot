@@ -1,0 +1,30 @@
+{
+  "itemGroup.bettercampfirepot.pot": "更好的营火锅: 锅",
+  "itemGroup.bettercampfirepot.upgrade": "更好的营火锅: 升级材料",
+
+  "tier.bettercampfirepot.vanilla": "普通",
+  "tier.bettercampfirepot.copper": "铜",
+  "tier.bettercampfirepot.iron": "铁",
+  "tier.bettercampfirepot.gold": "金",
+  "tier.bettercampfirepot.diamond": "钻石",
+  "tier.bettercampfirepot.emerald": "绿宝石",
+  "tier.bettercampfirepot.obsidian": "黑曜石",
+  "tier.bettercampfirepot.netherite": "下界合金",
+
+  "item.bettercampfirepot.tier_upgrade_item": "%s至%s升级材料",
+  "item.bettercampfirepot.pot": "%s%s",
+
+  "tooltip.bettercampfirepot.speed": "速度: %s倍",
+  "tooltip.bettercampfirepot.toggle_config": "切换配置",
+  "tooltip.bettercampfirepot.lock_slot": "点击锁定槽位",
+  "tooltip.bettercampfirepot.unlock_slot": "点击解锁槽位",
+  "tooltip.bettercampfirepot.save": "保存物品布局",
+
+  "screen.bettercampfirepot.side_top": "上面",
+  "screen.bettercampfirepot.side_bottom": "下面",
+  "screen.bettercampfirepot.side_front": "正面",
+  "screen.bettercampfirepot.side_back": "背面",
+  "screen.bettercampfirepot.side_left": "左面",
+  "screen.bettercampfirepot.side_right": "右面",
+  "screen.bettercampfirepot.change_slot": "点击更改槽位"
+}

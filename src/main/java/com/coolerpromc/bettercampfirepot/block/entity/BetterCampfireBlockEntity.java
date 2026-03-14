@@ -593,7 +593,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("tier.bettercampfirepot." + ((BetterCampfirePotItem) getPotItem().getItem()).tier).append(" ").append(Component.translatable("cobblemon.container.campfire_pot"));
+        return getPotItem().getItem().getName(getPotItem());
     }
 
     @Override
