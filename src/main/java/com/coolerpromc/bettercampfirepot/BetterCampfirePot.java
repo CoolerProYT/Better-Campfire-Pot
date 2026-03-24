@@ -20,8 +20,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.impl.resource.loader.ResourceManagerHelperImpl;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -139,7 +143,12 @@ public class BetterCampfirePot implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(BetterCampfirePotRecipe::onServerStarted);
 
         NeoForgeConfigRegistry.INSTANCE.register(MODID, ModConfig.Type.COMMON, BetterCampfirePotConfig.CONFIG_SPEC);
-	}
+
+        ModContainer mod = FabricLoader.getInstance().getModContainer(MODID).get();
+        ResourceLocation id = id("bettercampfirepotold");
+        ResourceManagerHelperImpl.registerBuiltinResourcePack(id, "resourcepacks/" + id.getPath(), mod, Component.literal("Better Campfire Pot v0"), ResourcePackActivationType.NORMAL);
+
+    }
 
     public static BetterCampfirePotBlock registerBlockWithItem(String tier, Function<BlockBehaviour.Properties, BetterCampfirePotBlock> func, CampfirePotColor color){
         String name = tier + "_" + color.getSuffix() + "_campfire_pot";
