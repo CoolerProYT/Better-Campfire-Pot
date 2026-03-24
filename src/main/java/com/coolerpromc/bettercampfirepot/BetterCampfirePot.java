@@ -16,6 +16,11 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.*;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.SoundType;
@@ -24,16 +29,22 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforgespi.language.IModInfo;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.slf4j.Logger;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -134,6 +145,7 @@ public class BetterCampfirePot {
         MENU_TYPES.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, BetterCampfirePotConfig.CONFIG_SPEC);
+        modEventBus.addListener(this::onAddPackFinders);
     }
 
     public static DeferredBlock<BetterCampfirePotBlock> registerBlockWithItem(String tier, Function<BlockBehaviour.Properties, BetterCampfirePotBlock> func, CampfirePotColor color){
@@ -185,5 +197,20 @@ public class BetterCampfirePot {
 
     public static boolean filterNetheriteTier(DeferredItem<BetterCampfirePotItem> item){
         return Objects.equals(item.get().tier, Tiers.NETHERITE);
+    }
+
+    public void onAddPackFinders(AddPackFindersEvent event) {
+        IModInfo modFile = ModList.get().getModContainerById(MODID).get().getModInfo();
+        ResourceLocation packLocation = id("resourcepacks/bettercampfirepotold");
+        Path resourcePath = modFile.getOwningFile().getFile().findResource(packLocation.getPath());
+
+        ArtifactVersion version = modFile.getVersion();
+
+        Pack pack = Pack.readMetaAndCreate(new PackLocationInfo("mod/" + packLocation, Component.literal("Better Campfire Pot v0"), PackSource.BUILT_IN, Optional.of(new KnownPack("neoforge", "mod/" + packLocation, version.toString()))),
+                BuiltInPackSource.fromName(info -> new PathPackResources(info, resourcePath)), PackType.CLIENT_RESOURCES, new PackSelectionConfig(false, Pack.Position.TOP, false));
+
+        if (pack != null){
+            event.addRepositorySource(c -> c.accept(pack));
+        }
     }
 }

@@ -1,2 +1,2 @@
-- Added translation for `zh_cn`
-- Make saved slot render fake item in lower opacity
+- New texture for all campfire pot block and item
+- Old texture is bundled in the mod, can be enabled in resource pack tab if you prefer the old one
