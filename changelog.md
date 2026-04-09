@@ -1,2 +1,1 @@
-- New texture for all campfire pot block and item
-- Old texture is bundled in the mod, can be enabled in resource pack tab if you prefer the old one
+- Improved locked-slot auto-insert behavior: matching input and seasoning slots now fill evenly instead of filling the first slot to max first.

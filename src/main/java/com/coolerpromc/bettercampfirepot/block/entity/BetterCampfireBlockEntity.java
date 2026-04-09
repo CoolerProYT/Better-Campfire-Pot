@@ -14,6 +14,7 @@ import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
 import com.coolerpromc.bettercampfirepot.recipe.BetterCampfirePotRecipe;
 import com.coolerpromc.bettercampfirepot.util.CampfirePotSlot;
+import com.coolerpromc.bettercampfirepot.util.EvenDistributionStorage;
 import com.coolerpromc.bettercampfirepot.util.KotlinHelper;
 import com.coolerpromc.bettercampfirepot.util.Side;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -580,8 +581,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
 
     private Storage<ItemVariant> getItemHandlerForSlot(CampfirePotSlot slot){
         return switch (slot){
-            case INPUT -> inputStorage;
-            case SEASONING -> seasoningStorage;
+            case INPUT -> lockSlot ? new EvenDistributionStorage(inputStorage) : inputStorage;
+            case SEASONING -> lockSlot ? new EvenDistributionStorage(seasoningStorage) : seasoningStorage;
             case OUTPUT -> outputStorage;
         };
     }
