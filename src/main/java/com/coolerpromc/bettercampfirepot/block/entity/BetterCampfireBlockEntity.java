@@ -108,6 +108,43 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
             }
             return stack.is(BetterCampfireBlockEntity.this.validInputItem.get(slot));
         }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (!lockSlot) {
+                return super.insertItem(slot, stack, simulate);
+            }
+
+            if (stack.isEmpty() || !isItemValid(slot, stack)) {
+                return stack;
+            }
+
+            List<Integer> validSlots = new ArrayList<>();
+            for (int i = 0; i < this.getSlots(); i++) {
+                if (isItemValid(i, stack)) {
+                    validSlots.add(i);
+                }
+            }
+
+            if (validSlots.size() <= 1) {
+                return super.insertItem(slot, stack, simulate);
+            }
+
+            int targetSlot = validSlots.get(0);
+            int minCount = Integer.MAX_VALUE;
+
+            for (int slotIdx : validSlots) {
+                ItemStack slotStack = this.getStackInSlot(slotIdx);
+                int count = slotStack.isEmpty() ? 0 : slotStack.getCount();
+
+                if (count < minCount) {
+                    targetSlot = slotIdx;
+                    minCount = count;
+                }
+            }
+
+            return super.insertItem(targetSlot, stack, simulate);
+        }
     };
     public final ItemStackHandler seasoningHandler = new ItemStackHandler(3){
         @Override
@@ -125,6 +162,43 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                 return true;
             }
             return isSeasoningItem && stack.is(BetterCampfireBlockEntity.this.validSeasoningItem.get(slot));
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            if (!lockSlot) {
+                return super.insertItem(slot, stack, simulate);
+            }
+
+            if (stack.isEmpty() || !isItemValid(slot, stack)) {
+                return stack;
+            }
+
+            List<Integer> validSlots = new ArrayList<>();
+            for (int i = 0; i < this.getSlots(); i++) {
+                if (isItemValid(i, stack)) {
+                    validSlots.add(i);
+                }
+            }
+
+            if (validSlots.size() <= 1) {
+                return super.insertItem(slot, stack, simulate);
+            }
+
+            int targetSlot = validSlots.getFirst();
+            int minCount = Integer.MAX_VALUE;
+
+            for (int slotIdx : validSlots) {
+                ItemStack slotStack = this.getStackInSlot(slotIdx);
+                int count = slotStack.isEmpty() ? 0 : slotStack.getCount();
+
+                if (count < minCount) {
+                    targetSlot = slotIdx;
+                    minCount = count;
+                }
+            }
+
+            return super.insertItem(targetSlot, stack, simulate);
         }
     };
     public ItemStackHandler outputHandler = new ItemStackHandler(1){
