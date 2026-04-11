@@ -1,5 +1,6 @@
 package com.coolerpromc.bettercampfirepot.client;
 
+import com.cobblemon.mod.common.api.cooking.FlavourColourHelperKt;
 import com.cobblemon.mod.common.client.sound.BlockEntitySoundTracker;
 import com.cobblemon.mod.common.client.sound.instances.CancellableSoundInstance;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
@@ -72,8 +73,7 @@ public class BetterCampfireBEClient {
     }
 
     private static Integer getColourMixFromSeasonings(List<ItemStack> seasonings, boolean isBubble) {
-        // Implementation needed - this method should calculate color mix from seasonings
-        return null;
+        return FlavourColourHelperKt.getColourMixFromSeasonings(seasonings, isBubble);
     }
 
 }

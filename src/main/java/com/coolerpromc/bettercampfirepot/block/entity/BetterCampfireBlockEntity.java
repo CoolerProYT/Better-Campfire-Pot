@@ -120,6 +120,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
             super.setChanged();
             if (level != null){
                 onItemUpdate(level);
+                brothColor = BASE_BROTH_COLOR;
+                bubbleColor = BASE_BROTH_BUBBLE_COLOR;
             }
         }
 
@@ -251,6 +253,27 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
                     if (!ItemStack.isSameItemSameComponents(resultSlotItem, cookedItem) || resultSlotItem.getCount() + cookedItem.getCount() > resultSlotItem.getMaxStackSize()) {
                         campfireBlockEntity.cookingProgress = 0;
                         return;
+                    }
+                }
+
+                if (campfireBlockEntity.lockSlot){
+                    int i = 0;
+                    for (Item item : campfireBlockEntity.validInputItem){
+                        if (item != Items.AIR){
+                            if (campfireBlockEntity.inputHandler.getItem(i).isEmpty()){
+                                return;
+                            }
+                        }
+                        i++;
+                    }
+                    i = 0;
+                    for (Item item : campfireBlockEntity.validSeasoningItem){
+                        if (item != Items.AIR){
+                            if (campfireBlockEntity.seasoningHandler.getItem(i).isEmpty()){
+                                return;
+                            }
+                        }
+                        i++;
                     }
                 }
 
@@ -539,7 +562,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     }
 
     public SimpleContainer dropContents(){
-        SimpleContainer container = new SimpleContainer();
+        SimpleContainer container = new SimpleContainer(inputHandler.getContainerSize() + seasoningHandler.getContainerSize() + outputHandler.getContainerSize());
         for (int i = 0; i < inputHandler.getContainerSize(); i++) {
             container.addItem(inputHandler.getItem(i));
         }
@@ -568,7 +591,9 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     }
 
     public @Nullable Storage<ItemVariant> getCapability(@Nullable Direction direction) {
-        if (direction == null) return null;
+        if (direction == null){
+            return InventoryStorage.of(dropContents(), null);
+        }
 
         Direction facing = getBlockState().getValue(HorizontalDirectionalBlock.FACING);
         Side side = Side.fromDirection(direction, facing);

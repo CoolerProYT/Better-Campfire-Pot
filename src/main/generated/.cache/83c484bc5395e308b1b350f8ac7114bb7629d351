@@ -1,5 +1,5 @@
-// 1.21.1	2026-01-20T14:50:10.1482344	Better Campfire Pot/Tags for minecraft:block
+// 1.21.1	2026-04-11T16:27:21.1997622	Better Campfire Pot/Tags for minecraft:block
 39b3a5b54f596356bf3770e358cb12f9ac8571c3 data\minecraft\tags\block\needs_diamond_tool.json
 9c226c6467d54b33c7217e4ea36581b718661edc data\minecraft\tags\block\needs_iron_tool.json
-3b61eda6d6b916ead1bc3fc8fdf645464624b25e data\minecraft\tags\block\needs_stone_tool.json
 fd886fe0058f21b91b44fb038839d6daf90f6ea6 data\minecraft\tags\block\mineable\pickaxe.json
+3b61eda6d6b916ead1bc3fc8fdf645464624b25e data\minecraft\tags\block\needs_stone_tool.json
