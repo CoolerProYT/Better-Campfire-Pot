@@ -70,7 +70,7 @@ public record BetterCampfireBER(BlockEntityRendererProvider.Context context) imp
         BlockState state = campfirePotItem.getBlock().defaultBlockState()
                 .setValue(BetterCampfirePotBlock.OPEN, isLidOpen)
                 .setValue(FACING, Direction.fromYRot(yRot))
-                .setValue(BetterCampfirePotBlock.OCCUPIED, (!blockEntity.getSeasonings().isEmpty() || !blockEntity.getIngredients().isEmpty()));
+                .setValue(BetterCampfirePotBlock.OCCUPIED, (!blockEntity.getSeasonings().stream().filter(stack -> !stack.isEmpty()).toList().isEmpty() || !blockEntity.getIngredients().stream().filter(stack -> !stack.isEmpty()).toList().isEmpty()));
         BakedModel bakedModel = blockRenderer.getBlockModel(state);
 
         float red = FastColor.ARGB32.red(blockEntity.brothColor) / 255F;
