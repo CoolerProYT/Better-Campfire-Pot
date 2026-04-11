@@ -1,4 +1,6 @@
-// 1.21.1	2026-01-19T18:04:43.5928161	Loot Tables
+// 1.21.1	2026-04-11T14:12:26.9684936	Loot Tables
+87cd539168d12e746900284408bf519f81adef45 data/bettercampfirepot/loot_table/blocks/better_campfire_block.json
+1eefcb9e4aad0c28d77eb5ba9cc4d05971b17db7 data/bettercampfirepot/loot_table/blocks/better_soul_campfire_block.json
 d24b88888e4f50817384898b39a20389260263bb data/bettercampfirepot/loot_table/blocks/copper_black_campfire_pot.json
 5cdcbbcb53b0892422b4069d627e170430fcb8d4 data/bettercampfirepot/loot_table/blocks/copper_blue_campfire_pot.json
 1d00a07c74678d492b9a24ff1d89b74d40b9d279 data/bettercampfirepot/loot_table/blocks/copper_green_campfire_pot.json

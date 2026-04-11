@@ -1,6 +1,7 @@
 package com.coolerpromc.bettercampfirepot.block.entity;
 
 import com.cobblemon.mod.common.CobblemonSounds;
+import com.cobblemon.mod.common.api.cooking.FlavourColourHelperKt;
 import com.cobblemon.mod.common.client.particle.BedrockParticleOptionsRepository;
 import com.cobblemon.mod.common.client.particle.ParticleStorm;
 import com.cobblemon.mod.common.client.render.MatrixWrapper;
@@ -130,20 +131,20 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                 return super.insertItem(slot, stack, simulate);
             }
 
-            int targetSlot = validSlots.get(0);
-            int minCount = Integer.MAX_VALUE;
+            // Sort valid slots by current count (ascending) so lowest-filled slots are tried first
+            validSlots.sort(Comparator.comparingInt(s -> {
+                ItemStack slotStack = this.getStackInSlot(s);
+                return slotStack.isEmpty() ? 0 : slotStack.getCount();
+            }));
 
-            for (int slotIdx : validSlots) {
-                ItemStack slotStack = this.getStackInSlot(slotIdx);
-                int count = slotStack.isEmpty() ? 0 : slotStack.getCount();
-
-                if (count < minCount) {
-                    targetSlot = slotIdx;
-                    minCount = count;
-                }
+            // Try inserting into each valid slot in order, carrying over the remainder
+            ItemStack remaining = stack;
+            for (int targetSlot : validSlots) {
+                if (remaining.isEmpty()) break;
+                remaining = super.insertItem(targetSlot, remaining, simulate);
             }
 
-            return super.insertItem(targetSlot, stack, simulate);
+            return remaining;
         }
     };
     public final ItemStackHandler seasoningHandler = new ItemStackHandler(3){
@@ -152,6 +153,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
             if (level != null){
                 onItemUpdate(level);
             }
+            brothColor = BASE_BROTH_COLOR;
+            bubbleColor = BASE_BROTH_BUBBLE_COLOR;
         }
 
         @Override
@@ -185,20 +188,20 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                 return super.insertItem(slot, stack, simulate);
             }
 
-            int targetSlot = validSlots.getFirst();
-            int minCount = Integer.MAX_VALUE;
+            // Sort valid slots by current count (ascending) so lowest-filled slots are tried first
+            validSlots.sort(Comparator.comparingInt(s -> {
+                ItemStack slotStack = this.getStackInSlot(s);
+                return slotStack.isEmpty() ? 0 : slotStack.getCount();
+            }));
 
-            for (int slotIdx : validSlots) {
-                ItemStack slotStack = this.getStackInSlot(slotIdx);
-                int count = slotStack.isEmpty() ? 0 : slotStack.getCount();
-
-                if (count < minCount) {
-                    targetSlot = slotIdx;
-                    minCount = count;
-                }
+            // Try inserting into each valid slot in order, carrying over the remainder
+            ItemStack remaining = stack;
+            for (int targetSlot : validSlots) {
+                if (remaining.isEmpty()) break;
+                remaining = super.insertItem(targetSlot, remaining, simulate);
             }
 
-            return super.insertItem(targetSlot, stack, simulate);
+            return remaining;
         }
     };
     public ItemStackHandler outputHandler = new ItemStackHandler(1){
@@ -371,6 +374,27 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                     }
                 }
 
+                if (campfireBlockEntity.lockSlot){
+                    int i = 0;
+                    for (Item item : campfireBlockEntity.validInputItem){
+                        if (item != Items.AIR){
+                            if (campfireBlockEntity.inputHandler.getStackInSlot(i).isEmpty()){
+                                return;
+                            }
+                        }
+                        i++;
+                    }
+                    i = 0;
+                    for (Item item : campfireBlockEntity.validSeasoningItem){
+                        if (item != Items.AIR){
+                            if (campfireBlockEntity.seasoningHandler.getStackInSlot(i).isEmpty()){
+                                return;
+                            }
+                        }
+                        i++;
+                    }
+                }
+
                 campfireBlockEntity.cookingProgress += campfireBlockEntity.progressPerTick;
                 campfireBlockEntity.cookingProgress = Math.min(campfireBlockEntity.cookingProgress, campfireBlockEntity.cookingTotalTime);
                 if (campfireBlockEntity.cookingProgress >= campfireBlockEntity.cookingTotalTime) {
@@ -422,8 +446,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
     }
 
     private static Integer getColourMixFromSeasonings(List<ItemStack> seasonings, boolean isBubble) {
-        // Implementation needed - this method should calculate color mix from seasonings
-        return null;
+        return FlavourColourHelperKt.getColourMixFromSeasonings(seasonings, isBubble);
     }
 
     public ParticleStorm particleEntityHandler(Vec3 position, Level level, ResourceLocation particle) {
@@ -652,7 +675,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
     }
 
     public SimpleContainer dropContents(){
-        SimpleContainer container = new SimpleContainer();
+        SimpleContainer container = new SimpleContainer(inputHandler.getSlots() + seasoningHandler.getSlots() + outputHandler.getSlots());
         for (int i = 0; i < inputHandler.getSlots(); i++) {
             container.addItem(inputHandler.getStackInSlot(i));
         }
@@ -676,7 +699,9 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
     }
 
     public @Nullable IItemHandler getCapability(@Nullable Direction direction) {
-        if (direction == null) return null;
+        if (direction == null) {
+            return new ItemStackHandler(NonNullList.copyOf(dropContents().getItems()));
+        }
 
         Direction facing = getBlockState().getValue(HorizontalDirectionalBlock.FACING);
         Side side = Side.fromDirection(direction, facing);
