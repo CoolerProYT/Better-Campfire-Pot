@@ -1,3 +1,7 @@
+# 1.7.1
+## Fixes
+- Fixed campfire pot using wrong blockstate when no ingredient and seasoning is present
+
 # 1.7.0
 ## Changes
 - Campfire Pot will no longer start crafting if slot is locked and slot that has item placement saved is empty
