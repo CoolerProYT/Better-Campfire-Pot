@@ -700,7 +700,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
 
     public @Nullable IItemHandler getCapability(@Nullable Direction direction) {
         if (direction == null) {
-            return new ItemStackHandler(NonNullList.copyOf(dropContents().getItems()));
+            return null;
         }
 
         Direction facing = getBlockState().getValue(HorizontalDirectionalBlock.FACING);
