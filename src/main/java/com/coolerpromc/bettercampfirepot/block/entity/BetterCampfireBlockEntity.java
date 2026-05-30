@@ -24,6 +24,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedSlottedStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -153,6 +154,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
     public final InventoryStorage inputStorage = InventoryStorage.of(inputHandler, null);
     public final InventoryStorage seasoningStorage = InventoryStorage.of(seasoningHandler, null);
     public final InventoryStorage outputStorage = InventoryStorage.of(outputHandler, null);
+
+    private final CombinedSlottedStorage<ItemVariant, InventoryStorage> combinedStorage = new CombinedSlottedStorage<>(List.of(inputStorage, seasoningStorage, outputStorage));
 
     public final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -592,7 +595,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements ExtendedSc
 
     public @Nullable Storage<ItemVariant> getCapability(@Nullable Direction direction) {
         if (direction == null){
-            return InventoryStorage.of(dropContents(), null);
+            return combinedStorage;
         }
 
         Direction facing = getBlockState().getValue(HorizontalDirectionalBlock.FACING);

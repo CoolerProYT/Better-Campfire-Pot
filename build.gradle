@@ -49,6 +49,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
 
+    modRuntimeOnly "curse.maven:jade-324717:7545228"
     modImplementation "curse.maven:cobblemon-687131:7273170"
     modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.1.6"
 
