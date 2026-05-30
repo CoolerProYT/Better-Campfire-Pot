@@ -1,3 +1,3 @@
-# 1.7.2
+# 1.7.3
 ## Changes
-- Revert the code for expose all slot in better campfire pot for Jade lookup from `1.7.0` as it can crash when using SFM with no side defined
+- Expose all the slot using `CombinedInvWrapper` for Jade to lookup and prevented crash from SFM when no side is defined

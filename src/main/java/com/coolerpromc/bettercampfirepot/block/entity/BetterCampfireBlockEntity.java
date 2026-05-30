@@ -59,6 +59,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
 
@@ -217,6 +218,8 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
             return false;
         }
     };
+
+    private IItemHandler combinedHandler = new CombinedInvWrapper(inputHandler, seasoningHandler, outputHandler);
 
     public final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -700,7 +703,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
 
     public @Nullable IItemHandler getCapability(@Nullable Direction direction) {
         if (direction == null) {
-            return null;
+            return combinedHandler;
         }
 
         Direction facing = getBlockState().getValue(HorizontalDirectionalBlock.FACING);
