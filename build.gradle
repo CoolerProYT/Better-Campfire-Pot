@@ -3,7 +3,7 @@ plugins {
     id 'net.fabricmc.fabric-loom-remap' version '1.14-SNAPSHOT' apply false
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
     id 'net.neoforged.moddev' version '2.0.139' apply false
-    id 'me.modmuss50.mod-publish-plugin' version '1.1.0' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.0' apply false
     // Applied to :fabric so Loom remaps the Kotlin metadata of Cobblemon for the dev runs
     id 'org.jetbrains.kotlin.jvm' version '2.3.0' apply false
 }

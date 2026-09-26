@@ -98,6 +98,8 @@ publishMods {
         accessToken = findProperty("CF_TOKEN")
         minecraftVersions.add(minecraft_version)
         requires("cobblemon")
+        client=true
+        server=true
     }
 
     modrinth {

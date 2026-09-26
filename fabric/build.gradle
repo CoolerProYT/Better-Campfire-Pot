@@ -65,6 +65,8 @@ publishMods {
         accessToken = findProperty("CF_TOKEN")
         minecraftVersions.add(minecraft_version)
         requires("cobblemon", "forge-config-api-port")
+        client=true
+        server=true
     }
 
     modrinth {
