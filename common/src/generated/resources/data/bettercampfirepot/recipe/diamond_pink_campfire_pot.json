@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "bettercampfirepot:gold_pink_campfire_pot"
+    },
+    "I": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "I I",
+    "IFI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:diamond_pink_campfire_pot"
+  }
+}

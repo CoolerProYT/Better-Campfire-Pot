@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "bettercampfirepot:copper_blue_campfire_pot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "I I",
+    "IFI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:iron_blue_campfire_pot"
+  }
+}

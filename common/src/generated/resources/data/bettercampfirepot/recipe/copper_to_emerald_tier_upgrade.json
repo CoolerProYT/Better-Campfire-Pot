@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "bettercampfirepot:copper_to_diamond_tier_upgrade"
+    },
+    "I": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "pattern": [
+    "I I",
+    "IFI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:copper_to_emerald_tier_upgrade"
+  }
+}

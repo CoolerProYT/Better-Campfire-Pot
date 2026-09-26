@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "item": "bettercampfirepot:diamond_to_emerald_tier_upgrade"
+  },
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:diamond_to_netherite_tier_upgrade"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}

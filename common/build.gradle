@@ -1,0 +1,56 @@
+plugins {
+    id 'multiloader-common'
+    id 'net.neoforged.moddev'
+}
+
+neoForge {
+    neoFormVersion = neo_form_version
+    // Automatically enable AccessTransformers if the file exists
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
+    }
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+}
+
+dependencies {
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    // fabric and neoforge both bundle mixinextras, so it is safe to use it in common
+    compileOnly group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
+    annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
+
+    // The NeoForge jar of Cobblemon is Mojang-mapped, so its common classes can be compiled against here.
+    compileOnly "maven.modrinth:cobblemon:${cobblemon_neoforge_modrinth_id}"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+    // NeoForge's ModConfigSpec API, provided on Fabric by Forge Config API Port
+    compileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api_port_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    // Jade's API only references vanilla classes, and its NeoForge jar is Mojang-mapped
+    compileOnly "curse.maven:jade-324717:${jade_neoforge_file}"
+}
+
+// NeoForge datagen (./gradlew :neoforge:runData) writes here so every loader ships the same generated resources.
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+    exclude '.cache/**'
+}
+
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources file('src/main/resources')
+    commonResources file('src/generated/resources')
+}

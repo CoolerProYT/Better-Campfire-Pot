@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${description}",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/cobblemon-better-campfire-pot",
+    "sources": "https://github.com/CoolerProYT/Better-Campfire-Pot"
+  },
+  "license": "${license}",
+  "icon": "assets/${mod_id}/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.coolerpromc.bettercampfirepot.FabricBetterCampfirePot"
+    ],
+    "client": [
+      "com.coolerpromc.bettercampfirepot.FabricBetterCampfirePotClient"
+    ],
+    "jei_mod_plugin": [
+      "com.coolerpromc.bettercampfirepot.compat.jei.ModJEIPlugin"
+    ],
+    "jade": [
+      "com.coolerpromc.bettercampfirepot.compat.jade.BetterCampfirePotJadePlugin"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "${fabric_minecraft_version_range}",
+    "java": ">=${java_version}",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*",
+    "cobblemon": ">=${cobblemon_version_range}",
+    "forgeconfigapiport": ">=${forge_config_api_port_version}"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "bettercampfirepot:iron_to_gold_tier_upgrade"
+    },
+    "I": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "I I",
+    "IFI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:iron_to_diamond_tier_upgrade"
+  }
+}

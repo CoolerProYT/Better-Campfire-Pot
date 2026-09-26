@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "bettercampfirepot:diamond_blue_campfire_pot"
+    },
+    "I": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "pattern": [
+    "I I",
+    "IFI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bettercampfirepot:emerald_blue_campfire_pot"
+  }
+}

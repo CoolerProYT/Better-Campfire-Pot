@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "bettercampfirepot:diamond_pink_campfire_pot"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "bettercampfirepot:blocks/diamond_pink_campfire_pot"
+}

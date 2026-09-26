@@ -1,0 +1,36 @@
+{
+  "itemGroup.bettercampfirepot.pot": "Better Campfire Pot: Pots",
+  "itemGroup.bettercampfirepot.upgrade": "Better Campfire Pot: Upgrades",
+
+  "tier.bettercampfirepot.vanilla": "Vanilla",
+  "tier.bettercampfirepot.copper": "Copper",
+  "tier.bettercampfirepot.iron": "Iron",
+  "tier.bettercampfirepot.gold": "Gold",
+  "tier.bettercampfirepot.diamond": "Diamond",
+  "tier.bettercampfirepot.emerald": "Emerald",
+  "tier.bettercampfirepot.obsidian": "Obsidian",
+  "tier.bettercampfirepot.netherite": "Netherite",
+
+  "item.bettercampfirepot.tier_upgrade_item": "%s to %s Tier Upgrade",
+  "item.bettercampfirepot.pot": "%s %s",
+
+  "tooltip.bettercampfirepot.speed": "Speed: %sx",
+  "tooltip.bettercampfirepot.toggle_config": "Toggle Config",
+  "tooltip.bettercampfirepot.lock_slot": "Click to Lock Slot",
+  "tooltip.bettercampfirepot.unlock_slot": "Click to Unlock Slot",
+  "tooltip.bettercampfirepot.save": "Save Item Placement",
+
+  "screen.bettercampfirepot.side_top": "Top",
+  "screen.bettercampfirepot.side_bottom": "Bottom",
+  "screen.bettercampfirepot.side_front": "Front",
+  "screen.bettercampfirepot.side_back": "Back",
+  "screen.bettercampfirepot.side_left": "Left",
+  "screen.bettercampfirepot.side_right": "Right",
+  "screen.bettercampfirepot.change_slot": "Click to Change Slot",
+
+  "jade.bettercampfirepot.tier": "Tier: %s",
+  "jade.bettercampfirepot.cooking": "Cooking: %s",
+  "jade.bettercampfirepot.progress": "Progress: %s%%",
+  "config.jade.plugin_bettercampfirepot.campfire_pot": "Better Campfire Pot",
+  "jei.bettercampfirepot.tier_upgrade.info": "Sneak and use on a %s tier campfire pot to upgrade it to %s tier. Works on a placed pot or on a pot sitting on a campfire."
+}

@@ -1,0 +1,76 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.fabricmc.fabric-loom-remap'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'me.modmuss50.mod-publish-plugin'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
+
+    modImplementation "maven.modrinth:cobblemon:${cobblemon_fabric_modrinth_id}"
+    // Libraries Cobblemon nests for production; the dev runs need them on the classpath (mirrors Cobblemon's own POM).
+    runtimeOnly "org.graalvm.js:js:22.3.0"
+    runtimeOnly "org.graalvm.sdk:graal-sdk:22.3.0"
+    runtimeOnly "org.graalvm.regex:regex:22.3.0"
+    runtimeOnly "org.graalvm.truffle:truffle-api:22.3.0"
+    runtimeOnly "com.ibm.icu:icu4j:71.1"
+    runtimeOnly "org.mongodb:mongodb-driver-core:4.10.2"
+    runtimeOnly "org.mongodb:mongodb-driver-sync:4.10.2"
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}"
+
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    modRuntimeOnly "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    modCompileOnly "curse.maven:jade-324717:${jade_fabric_file}"
+    modRuntimeOnly "curse.maven:jade-324717:${jade_fabric_file}"
+}
+
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
+}
+
+publishMods {
+    file.set(remapJar.archiveFile)
+    type = STABLE
+    modLoaders.add("fabric")
+    changelog = rootProject.file("changelog.md").text
+    displayName = mod_id + "-" + project.version + "+" + minecraft_version + "-fabric"
+
+    curseforge {
+        projectId = "1437573"
+        accessToken = findProperty("CF_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        requires("cobblemon", "forge-config-api-port")
+    }
+
+    modrinth {
+        projectId = "iTqv0DeF"
+        accessToken = findProperty("MODRINTH_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        requires("cobblemon", "forge-config-api-port")
+    }
+}
