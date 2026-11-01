@@ -32,5 +32,7 @@
   "jade.bettercampfirepot.cooking": "正在烹饪: %s",
   "jade.bettercampfirepot.progress": "进度: %s%%",
   "config.jade.plugin_bettercampfirepot.campfire_pot": "更好的营火锅",
-  "jei.bettercampfirepot.tier_upgrade.info": "潜行时对%s级营火锅使用，可将其升级为%s级。对放置的锅或放在营火上的锅都有效。"
+  "jei.bettercampfirepot.tier_upgrade.info": "潜行时对%s级营火锅使用，可将其升级为%s级。对放置的锅或放在营火上的锅都有效。",
+  "gui.bettercampfirepot.stove_needs_heat": "炉灶需要热源",
+  "gui.bettercampfirepot.stove_needs_heat_help": "使用打火石点燃炉灶。含水的炉灶无法提供热量。"
 }

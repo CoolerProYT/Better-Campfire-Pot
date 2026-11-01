@@ -9,6 +9,8 @@ import com.coolerpromc.bettercampfirepot.util.Side;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.coolerpromc.bettercampfirepot.platform.Services;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
+import static com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity.HAS_HEAT_INDEX;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -31,6 +33,7 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
     private final ResourceLocation GUI = BetterCampfirePot.id("textures/gui/sprites/gui.png");
     private final ResourceLocation COOK_PROGRESS_SPRITE = cobblemonResource("textures/gui/campfirepot/cook_progress.png");
 
+    private static final Tooltip NO_HEAT_TOOLTIP = Tooltip.create(Component.translatable("gui.bettercampfirepot.stove_needs_heat_help"));
     private BetterCookButton cookButton;
     private ToggleConfigButton toggleConfigButton;
     private LockSlotButton lockSlotButton;
@@ -101,6 +104,14 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
     }
 
     @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
+        if (menu.containerData.get(HAS_HEAT_INDEX) == 0) {
+            graphics.drawString(font, Component.translatable("gui.bettercampfirepot.stove_needs_heat"), 33, 75, 0xB03030, false);
+        }
+    }
+
+    @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(BACKGROUND, leftPos, topPos, 0, 0, imageWidth, imageHeight, 176, 166);
         int cookProgress = (int) Math.ceil(menu.getBurnProgress() * 22);
@@ -117,6 +128,7 @@ public class CookingPotScreen extends AbstractContainerScreen<CookingPotMenu> {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         cookButton.setSelected(menu.containerData.get(IS_LID_OPEN_INDEX) == 0);
+        cookButton.setTooltip(menu.containerData.get(HAS_HEAT_INDEX) == 0 ? NO_HEAT_TOOLTIP : null);
         cookButton.setPosition(this.leftPos + 97, topPos + 56);
 
         if (!initialized){

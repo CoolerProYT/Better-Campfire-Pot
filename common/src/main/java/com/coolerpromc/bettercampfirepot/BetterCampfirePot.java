@@ -6,6 +6,7 @@ import com.cobblemon.mod.common.block.campfirepot.CampfirePotColor;
 import com.cobblemon.mod.common.item.CampfirePotItem;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfirePotBlock;
+import com.coolerpromc.bettercampfirepot.block.StovePotBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.item.TierUpgradeItem;
@@ -41,7 +42,8 @@ public class BetterCampfirePot {
 
     public static final RegistryHandler.Blocks<BetterCampfireBlock> BETTER_CAMPFIRE_BLOCK = Services.REGISTRY.registerBlock("better_campfire_block", properties -> new BetterCampfireBlock(properties.sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.BLOCK).mapColor(MapColor.PODZOL).strength(2.0F).lightLevel(s -> 14), false));
     public static final RegistryHandler.Blocks<BetterCampfireBlock> BETTER_SOUL_CAMPFIRE_BLOCK = Services.REGISTRY.registerBlock("better_soul_campfire_block", properties -> new BetterCampfireBlock(properties.sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.BLOCK).mapColor(MapColor.PODZOL).strength(2.0F).lightLevel(s -> 9), true));
-    public static final RegistryHandler<BlockEntityType<?>, BlockEntityType<BetterCampfireBlockEntity>> BETTER_CAMPFIRE_BE = Services.REGISTRY.registerBlockEntityType("better_campfire_be", BetterCampfireBlockEntity::new, List.of(BETTER_CAMPFIRE_BLOCK, BETTER_SOUL_CAMPFIRE_BLOCK));
+    public static final RegistryHandler.Blocks<StovePotBlock> STOVE_POT_BLOCK = Services.REGISTRY.registerBlock("stove_pot", properties -> new StovePotBlock(properties.sound(SoundType.METAL).noOcclusion().pushReaction(PushReaction.BLOCK).strength(0.5F)));
+    public static final RegistryHandler<BlockEntityType<?>, BlockEntityType<BetterCampfireBlockEntity>> BETTER_CAMPFIRE_BE = Services.REGISTRY.registerBlockEntityType("better_campfire_be", BetterCampfireBlockEntity::new, List.of(BETTER_CAMPFIRE_BLOCK, BETTER_SOUL_CAMPFIRE_BLOCK, STOVE_POT_BLOCK));
     public static final RegistryHandler<MenuType<?>, MenuType<CookingPotMenu>> BETTER_CAMPFIRE_MENU = Services.REGISTRY.registerMenuType("better_campfire_menu", CookingPotMenu::new);
 
     public static List<RegistryHandler.Blocks<BetterCampfirePotBlock>> CAMPFIRE_POTS = new ArrayList<>();

@@ -1,6 +1,7 @@
 package com.coolerpromc.bettercampfirepot.block.entity.renderer;
 
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
+import com.coolerpromc.bettercampfirepot.block.StovePotBlock;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfirePotBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
@@ -38,6 +39,9 @@ public record BetterCampfireBER(BlockEntityRendererProvider.Context context) imp
         if (campfirePotItem == null) return;
 
         poseStack.pushPose();
+        if (blockEntity.getBlockState().getBlock() instanceof StovePotBlock) {
+            poseStack.translate(0, -0.4375, 0);
+        }
 
         Direction facing = blockEntity.getBlockState().getValue(FACING);
         float rotationAngle = switch (facing) {

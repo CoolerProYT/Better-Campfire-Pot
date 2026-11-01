@@ -32,5 +32,7 @@
   "jade.bettercampfirepot.cooking": "Cooking: %s",
   "jade.bettercampfirepot.progress": "Progress: %s%%",
   "config.jade.plugin_bettercampfirepot.campfire_pot": "Better Campfire Pot",
-  "jei.bettercampfirepot.tier_upgrade.info": "Sneak and use on a %s tier campfire pot to upgrade it to %s tier. Works on a placed pot or on a pot sitting on a campfire."
+  "jei.bettercampfirepot.tier_upgrade.info": "Sneak and use on a %s tier campfire pot to upgrade it to %s tier. Works on a placed pot or on a pot sitting on a campfire.",
+  "gui.bettercampfirepot.stove_needs_heat": "Stove needs heat",
+  "gui.bettercampfirepot.stove_needs_heat_help": "Light the stove with flint and steel. Waterlogged stoves provide no heat."
 }

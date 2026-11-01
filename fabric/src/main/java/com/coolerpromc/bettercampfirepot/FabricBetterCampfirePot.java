@@ -1,11 +1,17 @@
 package com.coolerpromc.bettercampfirepot;
 
 import com.coolerpromc.bettercampfirepot.network.HandledCustomPacketPayload;
+import com.coolerpromc.bettercampfirepot.compat.StoveHeatSources;
+import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.UseOnContext;
 import com.coolerpromc.bettercampfirepot.platform.Services;
 import com.coolerpromc.bettercampfirepot.platform.util.FabricServerPayloadContext;
 import com.coolerpromc.bettercampfirepot.recipe.BetterCampfirePotRecipe;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.world.InteractionResult;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -24,6 +30,15 @@ public class FabricBetterCampfirePot implements ModInitializer {
     @Override
     public void onInitialize() {
         BetterCampfirePot.init();
+        // Stoves may consume block interaction before Item.useOn is reached.
+        UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
+            if (!player.isSpectator() && hit.getDirection() == Direction.UP
+                    && player.getItemInHand(hand).getItem() instanceof BetterCampfirePotItem pot
+                    && StoveHeatSources.isStove(level.getBlockState(hit.getBlockPos()))) {
+                return pot.useOn(new UseOnContext(player, hand, hit));
+            }
+            return InteractionResult.PASS;
+        });
         BetterCampfirePot.initCapability();
         BetterCampfirePot.initPayloadType();
 

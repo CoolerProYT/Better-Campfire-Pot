@@ -5,6 +5,18 @@ plugins {
     id 'me.modmuss50.mod-publish-plugin'
 }
 
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'FabricASM'
+                url = 'https://jitpack.io'
+            }
+        }
+        filter { includeModule('com.github.Chocohead', 'Fabric-ASM') }
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
@@ -25,6 +37,17 @@ dependencies {
     runtimeOnly "org.mongodb:mongodb-driver-core:4.10.2"
     runtimeOnly "org.mongodb:mongodb-driver-sync:4.10.2"
     modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}"
+
+
+    // Stove compatibility test mods, kept on the development runtime classpath.
+    modRuntimeOnly "maven.modrinth:cobblefurnies:54k31lEX" // 1.2
+    modRuntimeOnly "maven.modrinth:farmers-delight-refabricated:YEHRH8LC" // 3.2.8
+    // Loom dev runs do not automatically load this library nested inside Farmer's Delight.
+    // Its early riser adds FARMERSDELIGHT_COOKING to RecipeBookType before vanilla loads it.
+    modLocalRuntime("com.github.Chocohead:Fabric-ASM:v2.3") { transitive = false }
+    modRuntimeOnly "maven.modrinth:kaleidoscope-cookery-refabricated:M0DfTI4N" // 1.5.1
+    modRuntimeOnly "maven.modrinth:architectury-api:Wto0RchG" // 13.0.8, required by CobbleFurnies
+    modRuntimeOnly "maven.modrinth:athena-ctm:JfyYsWKP" // 4.0.6, required by CobbleFurnies
 
     modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     modRuntimeOnly "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"

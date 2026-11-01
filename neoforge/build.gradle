@@ -58,9 +58,12 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
-            sourceSet sourceSets.gametest
+            if (gradle.startParameter.taskNames.any { it.tokenize(':').last() == 'runGameTestServer' }) {
+                sourceSet sourceSets.gametest
+            }
         }
     }
+    // Test resources belong only to the test server, never normal client/server runs.
     addModdingDependenciesTo(sourceSets.gametest)
 }
 
@@ -72,6 +75,13 @@ dependencies {
     implementation "curse.maven:kotlin-for-forge-351264:6994056"
     // Kotlin types from Cobblemon's API are referenced by the common sources compiled here; Kotlin for Forge provides them at runtime.
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+
+
+    // Stove compatibility test mods, kept on the development runtime classpath.
+    localRuntime "maven.modrinth:cobblefurnies:Ynk3uYUi" // 1.2
+    localRuntime "maven.modrinth:farmers-delight:XJKk7DgU" // 1.3.0
+    localRuntime "maven.modrinth:kaleidoscope-cookery:g8w0b2ly" // 1.6.0
+    localRuntime "maven.modrinth:athena-ctm:dJgL278E" // 4.0.6, required by CobbleFurnies
 
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"

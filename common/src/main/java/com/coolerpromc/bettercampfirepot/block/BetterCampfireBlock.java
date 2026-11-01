@@ -183,7 +183,9 @@ public class BetterCampfireBlock extends BaseEntityBlock implements SimpleWaterl
 
         BlockState newBlockState = isSoul ? Blocks.SOUL_CAMPFIRE.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, facing) : Blocks.CAMPFIRE.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, facing);
 
-        if (byWater) {
+        if (this instanceof StovePotBlock) {
+            newBlockState = Blocks.AIR.defaultBlockState();
+        } else if (byWater) {
             newBlockState = newBlockState.setValue(BlockStateProperties.WATERLOGGED, true).setValue(CampfireBlock.LIT, false);
         }
 

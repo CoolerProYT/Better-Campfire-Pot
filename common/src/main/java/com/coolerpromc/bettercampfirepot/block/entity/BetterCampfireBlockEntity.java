@@ -10,6 +10,8 @@ import com.cobblemon.mod.common.util.WorldExtensionsKt;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePotConfig;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
+import com.coolerpromc.bettercampfirepot.block.StovePotBlock;
+import com.coolerpromc.bettercampfirepot.compat.StoveHeatSources;
 import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
 import com.coolerpromc.bettercampfirepot.menu.CookingPotMenu;
 import com.coolerpromc.bettercampfirepot.platform.Services;
@@ -70,6 +72,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
     public static final int IS_LID_OPEN_INDEX = 2;
     public static final int COOKING_POT_COLOR_INDEX = 3;
     public static final int IS_SLOT_LOCKED_INDEX = 4;
+    public static final int HAS_HEAT_INDEX = 5;
 
     public static final int BASE_BROTH_COLOR = 0xFDFACF;
     public static final int BASE_BROTH_BUBBLE_COLOR = 0xFFFEFDE4;
@@ -171,6 +174,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
                     yield 0;
                 }
                 case IS_SLOT_LOCKED_INDEX -> BetterCampfireBlockEntity.this.lockSlot ? 1 : 0;
+                case HAS_HEAT_INDEX -> BetterCampfireBlockEntity.this.hasHeat() ? 1 : 0;
                 default -> 0;
             };
         }
@@ -189,7 +193,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
     };
 
@@ -205,6 +209,10 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
         capabilityBySide.putIfAbsent(Side.BACK, CampfirePotSlot.INPUT);
         capabilityBySide.putIfAbsent(Side.LEFT, CampfirePotSlot.INPUT);
         capabilityBySide.putIfAbsent(Side.RIGHT, CampfirePotSlot.INPUT);
+    }
+
+    public boolean hasHeat() {
+        return level != null && (!(getBlockState().getBlock() instanceof StovePotBlock) || StoveHeatSources.isHot(level.getBlockState(worldPosition.below())));
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, BetterCampfireBlockEntity campfireBlockEntity) {
@@ -252,7 +260,7 @@ public class BetterCampfireBlockEntity extends BlockEntity implements MenuProvid
             List<ItemStack> filteredSeasonings = campfireBlockEntity.getSeasonings().stream().filter(s -> s.is(recipe.seasoningTag())).toList();
             recipe.applySeasoning(cookedItem, filteredSeasonings);
 
-            if (!campfireBlockEntity.getBlockState().getValue(BetterCampfireBlock.LID)) {
+            if (!campfireBlockEntity.getBlockState().getValue(BetterCampfireBlock.LID) || !campfireBlockEntity.hasHeat()) {
                 campfireBlockEntity.cookingProgress = 0;
             } else {
                 boolean outputBlocked = !resultSlotItem.isEmpty() && (!ItemStack.isSameItemSameComponents(resultSlotItem, cookedItem) || resultSlotItem.getCount() + cookedItem.getCount() > resultSlotItem.getMaxStackSize());

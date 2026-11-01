@@ -22,6 +22,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
+        this.add(BetterCampfirePot.STOVE_POT_BLOCK.get(), net.minecraft.world.level.storage.loot.LootTable.lootTable());
         BetterCampfirePot.CAMPFIRE_POTS.stream().map(RegistryHandler.Blocks::get).forEach(this::dropSelf);
 
         this.add(BetterCampfirePot.BETTER_CAMPFIRE_BLOCK.get(), this.createSilkTouchDispatchTable(Blocks.CAMPFIRE, this.applyExplosionCondition(Items.CAMPFIRE, LootItem.lootTableItem(Items.CHARCOAL).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F))))));

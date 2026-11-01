@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.api.cooking.FlavourColourHelperKt;
 import com.cobblemon.mod.common.client.sound.BlockEntitySoundTracker;
 import com.cobblemon.mod.common.client.sound.instances.CancellableSoundInstance;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
+import com.coolerpromc.bettercampfirepot.block.StovePotBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -59,7 +60,7 @@ public class BetterCampfireBEClient {
             campfireBlockEntity.particleCooldown--;
         } else {
             if (isCooking) {
-                Vec3 position = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5375, pos.getZ() + 0.5);
+                Vec3 position = new Vec3(pos.getX() + 0.5, pos.getY() + (state.getBlock() instanceof StovePotBlock ? 0.1 : 0.5375), pos.getZ() + 0.5);
                 campfireBlockEntity.particleEntityHandler(
                         position,
                         level,

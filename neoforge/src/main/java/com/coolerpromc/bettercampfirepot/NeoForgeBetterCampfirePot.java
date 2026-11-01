@@ -2,6 +2,10 @@ package com.coolerpromc.bettercampfirepot;
 
 import com.coolerpromc.bettercampfirepot.datagen.DataGenerators;
 import com.coolerpromc.bettercampfirepot.network.HandledCustomPacketPayload;
+import com.coolerpromc.bettercampfirepot.compat.StoveHeatSources;
+import com.coolerpromc.bettercampfirepot.item.BetterCampfirePotItem;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.UseOnContext;
 import com.coolerpromc.bettercampfirepot.platform.NeoForgeRegistryHelper;
 import com.coolerpromc.bettercampfirepot.platform.Services;
 import com.coolerpromc.bettercampfirepot.platform.util.NeoForgePayloadContext;
@@ -28,6 +32,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -49,8 +54,18 @@ public class NeoForgeBetterCampfirePot {
         eventBus.addListener(NeoForgeBetterCampfirePot::onRegisterPayloadHandlers);
         eventBus.addListener(NeoForgeBetterCampfirePot::onAddPackFinders);
         eventBus.addListener(DataGenerators::onGatherData);
+        NeoForge.EVENT_BUS.addListener(NeoForgeBetterCampfirePot::onUseStove);
         NeoForge.EVENT_BUS.addListener(NeoForgeBetterCampfirePot::onServerStarted);
         NeoForge.EVENT_BUS.addListener(NeoForgeBetterCampfirePot::onDatapackSync);
+    }
+
+    private static void onUseStove(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.getEntity().isSpectator() && event.getFace() == Direction.UP
+                && event.getItemStack().getItem() instanceof BetterCampfirePotItem pot
+                && StoveHeatSources.isStove(event.getLevel().getBlockState(event.getPos()))) {
+            event.setCancellationResult(pot.useOn(new UseOnContext(event.getEntity(), event.getHand(), event.getHitVec())));
+            event.setCanceled(true);
+        }
     }
 
     private static void onDatapackSync(OnDatapackSyncEvent event) {

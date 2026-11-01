@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.CobblemonSounds;
 import com.cobblemon.mod.common.block.campfirepot.CampfirePotColor;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePot;
 import com.coolerpromc.bettercampfirepot.BetterCampfirePotConfig;
+import com.coolerpromc.bettercampfirepot.compat.StoveHeatSources;
 import com.coolerpromc.bettercampfirepot.block.BetterCampfireBlock;
 import com.coolerpromc.bettercampfirepot.block.entity.BetterCampfireBlockEntity;
 import net.minecraft.ChatFormatting;
@@ -45,6 +46,31 @@ public class BetterCampfirePotItem extends BlockItem {
         BlockState blockState = world.getBlockState(blockPos);
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         Player player = context.getPlayer();
+
+        if (player != null && context.getClickedFace() == Direction.UP && StoveHeatSources.isStove(blockState)) {
+            BlockPos potPos = blockPos.above();
+            if (StoveHeatSources.hasAttachedPot(blockState) || !world.mayInteract(player, blockPos) || !world.mayInteract(player, potPos) || !player.mayUseItemAt(potPos, Direction.UP, context.getItemInHand())
+                    || !world.getBlockState(potPos).isAir() || !world.getFluidState(potPos).isEmpty()) {
+                return InteractionResult.FAIL;
+            }
+            BlockState potState = BetterCampfirePot.STOVE_POT_BLOCK.get().defaultBlockState()
+                    .setValue(HorizontalDirectionalBlock.FACING, player.getDirection().getOpposite())
+                    .setValue(BetterCampfireBlock.ITEM_DIRECTION, player.getDirection().getOpposite())
+                    .setValue(BetterCampfireBlock.POWERED, world.hasNeighborSignal(potPos));
+            if (!world.isUnobstructed(potState, potPos, net.minecraft.world.phys.shapes.CollisionContext.of(player))) {
+                return InteractionResult.FAIL;
+            }
+            if (world.isClientSide) return InteractionResult.SUCCESS;
+            if (world.setBlockAndUpdate(potPos, potState)
+                    && world.getBlockEntity(potPos) instanceof BetterCampfireBlockEntity pot) {
+                pot.setPotItem(context.getItemInHand().copyWithCount(1));
+                pot.progressPerTick = BetterCampfirePotConfig.CONFIG.getTickByTier(tier);
+                if (!player.isCreative()) context.getItemInHand().shrink(1);
+                world.playSound(null, potPos, CobblemonSounds.CAMPFIRE_POT_SET, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return InteractionResult.CONSUME;
+            }
+            return InteractionResult.FAIL;
+        }
 
         if (player != null && blockState.getBlock() instanceof CampfireBlock && blockEntity instanceof CampfireBlockEntity) {
             if (blockState.getValue(CampfireBlock.LIT)) {

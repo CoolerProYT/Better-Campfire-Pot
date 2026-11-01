@@ -1,20 +1,10 @@
-# 1.8.0
-## Changes
-- Fabric and NeoForge versions are now built from a single MultiLoader project
-- Jade shows a campfire pot's tier, speed, current dish and cooking progress
-- JEI shows how to use each tier upgrade item
-- New `autoOutput` config option (off by default) that pushes finished dishes into the container on the pot's item-facing side
-- Pot tooltips now show the server's configured speed when playing on a server
+# 1.8.1
 
-## Fixes
-- Fixed items being duplicated when a pot was broken or removed while its menu was open
-- The cooking pot menu now closes when the player moves away or the pot is removed
-- Fixed players being able to change a pot's side config, slot lock or saved layout without having its menu open
-- Fixed pots continuing to show as cooking while their output slot was blocked
-- Campfire pot recipes now update after `/reload`
-- Fixed pots on the client sometimes still rendering items that had been taken out
-- The "Better Campfire Pot v0" pack is no longer also listed as a data pack on NeoForge
-
-## Performance
-- Pots only re-match recipes when their ingredients change
-- Pot inventory changes are sent to clients at most once per tick
+## Stove compatibility
+- Better pots now cook on all 16 CobbleFurnies stoves, Farmer's Delight stoves, and Kaleidoscope Cookery stoves.
+- Right-click the top of a stove with a better pot to place it. Remove any pot already attached to a CobbleFurnies stove first.
+- Stove pots retain tier speeds, upgrades, the cooking screen, redstone control, and item automation while preserving the stove and its inventory.
+- Farmer's Delight and Kaleidoscope Cookery stoves must be lit. Extinguishing a stove resets cooking progress without consuming ingredients. CobbleFurnies stoves need no fuel; waterlogged stoves provide no heat.
+- Sneak and right-click the pot with an empty hand to retrieve it. Breaking the pot or removing the stove drops the pot and its contents.
+- Modpacks can add more stove blocks through the `bettercampfirepot:stoves` block tag.
+- The cooking screen now shows when a stove provides no heat, with a tooltip explaining how to light it.
